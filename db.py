@@ -196,6 +196,7 @@ def _migrate(conn: sqlite3.Connection) -> None:
             passive_perception INTEGER,
             passive_insight INTEGER,
             passive_investigation INTEGER,
+            prepared_max_override INTEGER,
             conditions TEXT NOT NULL DEFAULT '[]',
             defenses TEXT NOT NULL DEFAULT '{}',
             background_info TEXT NOT NULL DEFAULT '',
@@ -293,16 +294,18 @@ def _migrate(conn: sqlite3.Connection) -> None:
     #   rev 1 — reference tables (scaffold)
     #   rev 2 — player-character tables (created above via CREATE TABLE IF NOT EXISTS)
     #   rev 3 — passive-sense manual-override columns on characters
+    #   rev 4 — prepared-spells max manual-override column on characters
     try:
         ver = conn.execute("PRAGMA user_version").fetchone()[0]
-        if ver < 3:
-            # Backfill the passive override columns onto pre-rev-3 character tables.
-            for col in ("passive_perception", "passive_insight", "passive_investigation"):
+        if ver < 4:
+            # Backfill the override columns onto pre-rev character tables.
+            for col in ("passive_perception", "passive_insight", "passive_investigation",
+                        "prepared_max_override"):
                 try:
                     conn.execute(f"ALTER TABLE characters ADD COLUMN {col} INTEGER")
                 except Exception:
                     pass  # already present (fresh DBs get them from CREATE TABLE)
-        conn.execute("PRAGMA user_version = 3")
+        conn.execute("PRAGMA user_version = 4")
     except Exception:
         pass
 
@@ -884,11 +887,13 @@ class Database:
         "hp_max", "hp_current", "hp_temp", "ac", "speed", "initiative_misc",
         "hit_dice_used", "death_save_success", "death_save_fail",
         "prof_bonus_override", "passive_perception", "passive_insight",
-        "passive_investigation", "conditions", "defenses", "background_info",
+        "passive_investigation", "prepared_max_override",
+        "conditions", "defenses", "background_info",
     ]
     # Columns where NULL is meaningful ("not set" / "derive"), not coerced to 0.
     _CHAR_NULLABLE_INT_COLS = {
-        "prof_bonus_override", "passive_perception", "passive_insight", "passive_investigation",
+        "prof_bonus_override", "passive_perception", "passive_insight",
+        "passive_investigation", "prepared_max_override",
     }
 
     @staticmethod

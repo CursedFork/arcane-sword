@@ -21,6 +21,7 @@ from pages.skills import SkillsPage
 from pages.languages import LanguagesPage
 from pages.items import ItemsPage
 from pages.character_sheet import CharacterSheetPage
+from pages.spellcasting import SpellsAvailablePage, SpellbookPage
 from pages.placeholder import PlaceholderPage
 
 # ── Colour palette (kept identical to Arcane Shield) ─────────────────────────────
@@ -48,6 +49,7 @@ NAV_CONTENT = [
     # Player tabs (placeholders for now) ──────────────────────────
     ("actions",      "⚡  Actions"),
     ("inventory",    "🎒  Inventory"),
+    ("spells_avail", "✨  Spells — Available"),
     ("spellbook",    "📕  Spellbook"),
     ("features",     "🌟  Features & Traits"),
     ("level_up",     "⬆  Level-Up"),
@@ -175,7 +177,8 @@ class App(ctk.CTk):
             # Player tabs (placeholders)
             "actions":    stub("Actions", "Track your attacks, spells, and other actions in combat."),
             "inventory":  stub("Inventory", "Carry, equip, and manage your gear and treasure."),
-            "spellbook":  stub("Spellbook", "Prepare and cast from your known and prepared spells."),
+            "spells_avail": SpellsAvailablePage(self._content, self.db, self),
+            "spellbook":    SpellbookPage(self._content, self.db, self),
             "features":   stub("Features & Traits", "Class features, racial traits, and feats you've gained."),
             "level_up":   stub("Level-Up", "Step through choices as your character gains a level."),
             "rest":       stub("Rest", "Take short and long rests to recover resources."),
