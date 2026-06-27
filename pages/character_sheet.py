@@ -824,7 +824,21 @@ class CharacterSheetPage(ctk.CTkFrame):
     # ── Rest stubs (wired in a later task) ──────────────────────────────────────
 
     def _short_rest(self):
-        messagebox.showinfo("Short Rest", "Short-rest recovery will be wired up in a later update.")
+        if not self._cid:
+            return
+        from pages import rest_logic
+        r = rest_logic.short_rest(self.db, self._cid)
+        self._render_sheet()
+        messagebox.showinfo("Short Rest", "Short rest complete. Restored "
+                            f"{r['resources_reset']} short-recharge resource(s). "
+                            "Spend hit dice on the Rest tab.")
 
     def _long_rest(self):
-        messagebox.showinfo("Long Rest", "Long-rest recovery will be wired up in a later update.")
+        if not self._cid:
+            return
+        from pages import rest_logic
+        r = rest_logic.long_rest(self.db, self._cid)
+        self._render_sheet()
+        messagebox.showinfo("Long Rest", f"Fully rested — HP restored to {r['hp']}, "
+                            f"recovered {r['hit_dice_recovered']} hit dice, reset "
+                            f"{r['slots_reset']} spell-slot level(s).")

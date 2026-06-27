@@ -27,6 +27,9 @@ from pages.actions import ActionsPage
 from pages.features import FeaturesPage
 from pages.background import BackgroundPage
 from pages.leveling import LevelUpPage
+from pages.rest import RestPage
+from pages.campaign_notes import CampaignNotesPage
+from pages.character_io import CharacterIOPage
 from pages.placeholder import PlaceholderPage
 
 # ── Colour palette (kept identical to Arcane Shield) ─────────────────────────────
@@ -44,14 +47,7 @@ NAV_TOP = [
     ("character_sheet", "🗡  Character Sheet"),
 ]
 NAV_CONTENT = [
-    # Reference browsers (fully working) ──────────────────────────
-    ("spells",       "✨  Spells"),
-    ("char_opts",    "🧙  Character Options"),
-    ("conditions",   "🜸  Conditions"),
-    ("skills",       "🎯  Skills"),
-    ("languages",    "🗣  Languages"),
-    ("items",        "✦  Items"),
-    # Player tabs (placeholders for now) ──────────────────────────
+    # ── Your character ────────────────────────────────────────────
     ("actions",      "⚡  Actions"),
     ("inventory",    "🎒  Inventory"),
     ("spells_avail", "✨  Spells — Available"),
@@ -61,9 +57,16 @@ NAV_CONTENT = [
     ("level_up",     "⬆  Level-Up"),
     ("rest",         "🌙  Rest"),
     ("campaign",     "✎  Campaign Notes"),
+    # ── Reference compendium ──────────────────────────────────────
+    ("spells",       "📖  Spells (reference)"),
+    ("char_opts",    "🧙  Character Options"),
+    ("conditions",   "🜸  Conditions"),
+    ("skills",       "🎯  Skills"),
+    ("languages",    "🗣  Languages"),
+    ("items",        "✦  Items"),
 ]
 NAV_BOTTOM = [
-    ("import",       "⬆  Import Character"),
+    ("import",       "⬆  Import / Manage"),
 ]
 NAV_ITEMS = NAV_TOP + NAV_CONTENT + NAV_BOTTOM
 
@@ -188,9 +191,9 @@ class App(ctk.CTk):
             "features":   FeaturesPage(self._content, self.db, self),
             "background": BackgroundPage(self._content, self.db, self),
             "level_up":   LevelUpPage(self._content, self.db, self),
-            "rest":       stub("Rest", "Take short and long rests to recover resources."),
-            "campaign":   stub("Campaign Notes", "Keep session notes, quests, and contacts for your campaign."),
-            "import":     stub("Import Character", "Import a character built elsewhere into Arcane Sword."),
+            "rest":       RestPage(self._content, self.db, self),
+            "campaign":   CampaignNotesPage(self._content, self.db, self),
+            "import":     CharacterIOPage(self._content, self.db, self),
         }
 
         for page in self._pages.values():
@@ -198,7 +201,7 @@ class App(ctk.CTk):
             page.grid_remove()
 
         self._current: str | None = None
-        self.show_page("spells")
+        self.show_page("character_sheet")
 
     # ── Navigation ─────────────────────────────────────────────────────────────
 

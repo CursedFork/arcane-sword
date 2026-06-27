@@ -1419,6 +1419,157 @@ class Database:
             self._bulk = False
         return {"table": table, "inserted": inserted, "skipped": skipped, "errors": errors}
 
+    # ── Per-character export / import ───────────────────────────────────────────
+
+    # The flat one-row-per-character CSV columns (same format import_character_row
+    # accepts; see data/characters_template.csv).
+    CHARACTER_CSV_COLS = [
+        "name", "player_name", "race", "subrace", "background", "alignment", "xp",
+        "inspiration", "classes", "str", "dex", "con", "int", "wis", "cha",
+        "hp_max", "hp_current", "hp_temp", "ac", "speed", "initiative_misc",
+        "skill_proficiencies", "saving_throws",
+        "passive_perception", "passive_insight", "passive_investigation",
+        "conditions", "resistances", "immunities", "vulnerabilities", "languages",
+        "tool_proficiencies", "weapon_proficiencies", "armor_proficiencies",
+        "inventory", "spells_known", "spells_prepared", "features",
+        "background_info", "notes",
+    ]
+
+    def _character_csv_row(self, c: dict) -> dict:
+        """Flatten an assembled character (get_character) into the CSV columns."""
+        def clean(s):  # keep our delimiters out of free text
+            return (s or "").replace("||", "/").replace(";;", "; ")
+        classes = ";".join(
+            f"{k['class']}({k['subclass']}):{k['level']}" if k.get("subclass")
+            else f"{k['class']}:{k['level']}" for k in c["classes"])
+        skills = ";".join(("*" if s["proficiency"] == "expertise" else "") + s["skill"]
+                          for s in c["skills"] if s["proficiency"] in ("proficient", "expertise"))
+        saves = ";".join(s["ability"][:3].upper() for s in c["saves"] if s.get("proficient"))
+        prof = {"language": [], "tool": [], "weapon": [], "armor": []}
+        for p in c["proficiencies"]:
+            prof.setdefault(p["kind"], []).append(p["name"])
+        defenses = c.get("defenses", {}) or {}
+        inv = ";".join(f"{r['item_name']}:{r['quantity']}" for r in c["inventory"])
+        known = ";".join(s["spell_name"] for s in c["spells"] if s.get("known"))
+        prepared = ";".join(s["spell_name"] for s in c["spells"] if s.get("prepared"))
+        action_types = {"attack", "action", "bonus", "reaction"}
+        feats = ";;".join(
+            f"{clean(f.get('source_name') or f.get('source_type'))}|{clean(f['name'])}|"
+            f"{clean(f.get('description'))}"
+            for f in c["features"] if (f.get("source_type") or "").lower() not in action_types)
+        notes = "\n\n".join((f"## {n['title']}\n{n['body_md']}" if n.get("title") else n["body_md"])
+                            for n in c["notes"])
+
+        def ov(k):
+            return "" if c.get(k) is None else c.get(k)
+        return {
+            "name": c["name"], "player_name": c.get("player_name", ""),
+            "race": c.get("race", ""), "subrace": c.get("subrace", ""),
+            "background": c.get("background", ""), "alignment": c.get("alignment", ""),
+            "xp": c.get("xp", 0), "inspiration": c.get("inspiration", 0),
+            "classes": classes,
+            "str": c["str"], "dex": c["dex"], "con": c["con"],
+            "int": c["int"], "wis": c["wis"], "cha": c["cha"],
+            "hp_max": c["hp_max"], "hp_current": c["hp_current"], "hp_temp": c["hp_temp"],
+            "ac": c["ac"], "speed": c["speed"], "initiative_misc": c["initiative_misc"],
+            "skill_proficiencies": skills, "saving_throws": saves,
+            "passive_perception": ov("passive_perception"),
+            "passive_insight": ov("passive_insight"),
+            "passive_investigation": ov("passive_investigation"),
+            "conditions": ";".join(c.get("conditions", [])),
+            "resistances": ";".join(defenses.get("resist", [])),
+            "immunities": ";".join(defenses.get("immune", [])),
+            "vulnerabilities": ";".join(defenses.get("vuln", [])),
+            "languages": ";".join(prof["language"]),
+            "tool_proficiencies": ";".join(prof["tool"]),
+            "weapon_proficiencies": ";".join(prof["weapon"]),
+            "armor_proficiencies": ";".join(prof["armor"]),
+            "inventory": inv, "spells_known": known, "spells_prepared": prepared,
+            "features": feats, "background_info": c.get("background_info", ""),
+            "notes": notes,
+        }
+
+    def export_character_csv(self, character_id: int) -> str:
+        c = self.get_character(character_id)
+        if not c:
+            return ""
+        out = io.StringIO()
+        w = csv.DictWriter(out, fieldnames=self.CHARACTER_CSV_COLS)
+        w.writeheader()
+        w.writerow(self._character_csv_row(c))
+        return out.getvalue()
+
+    def export_characters_csv(self, character_ids=None) -> str:
+        """Bulk CSV export (all characters by default) — one row each."""
+        ids = character_ids if character_ids is not None else \
+            [r["id"] for r in self.conn.execute("SELECT id FROM characters ORDER BY name")]
+        out = io.StringIO()
+        w = csv.DictWriter(out, fieldnames=self.CHARACTER_CSV_COLS)
+        w.writeheader()
+        for cid in ids:
+            c = self.get_character(cid)
+            if c:
+                w.writerow(self._character_csv_row(c))
+        return out.getvalue()
+
+    # Child tables included in a lossless JSON export (in dependency order).
+    _JSON_CHILD_TABLES = [
+        "character_classes", "character_skills", "character_saves",
+        "character_proficiencies", "character_inventory", "character_spells",
+        "character_spell_slots", "character_resources", "character_features",
+        "character_notes",
+    ]
+
+    def export_character_json(self, character_id: int) -> str:
+        """Lossless JSON: the character row plus every child row."""
+        row = self.conn.execute("SELECT * FROM characters WHERE id=?",
+                                (character_id,)).fetchone()
+        if not row:
+            return "{}"
+        data = {"format": "arcane-sword-character", "version": 1,
+                "character": dict(row), "children": {}}
+        for t in self._JSON_CHILD_TABLES:
+            data["children"][t] = _rows(self.conn.execute(
+                f"SELECT * FROM {t} WHERE character_id=?", (character_id,)).fetchall())
+        return json.dumps(data, indent=2)
+
+    def import_character_json(self, text: str) -> int:
+        """Recreate a character (new id) from an export_character_json() payload."""
+        data = json.loads(text)
+        crow = dict(data.get("character", {}))
+        crow.pop("id", None)
+        # Reuse create_character for column coercion (it ignores unknown keys).
+        cid = self.create_character(crow)
+        self._bulk = True
+        try:
+            for t in self._JSON_CHILD_TABLES:
+                for r in data.get("children", {}).get(t, []):
+                    fields = {k: v for k, v in r.items()
+                              if k in self._CHILD_FIELDS[t]}
+                    self.add_child(t, cid, fields)
+        finally:
+            self.conn.commit()
+            self._bulk = False
+        return cid
+
+    # ── Global reset ────────────────────────────────────────────────────────────
+
+    def character_count(self) -> int:
+        return self.conn.execute("SELECT COUNT(*) FROM characters").fetchone()[0]
+
+    def wipe_all_characters(self) -> int:
+        """Delete every character (children cascade). Snapshots a backup first.
+        Reference compendium tables are left untouched. Returns rows deleted."""
+        n = self.character_count()
+        _make_backup(self.conn)  # safety snapshot before a destructive reset
+        self.conn.execute("DELETE FROM characters")
+        self.conn.commit()
+        try:
+            self.conn.execute("VACUUM")
+        except Exception:
+            pass
+        return n
+
 
 # ── Helpers ────────────────────────────────────────────────────────────────────
 
