@@ -22,6 +22,8 @@ from pages.languages import LanguagesPage
 from pages.items import ItemsPage
 from pages.character_sheet import CharacterSheetPage
 from pages.spellcasting import SpellsAvailablePage, SpellbookPage
+from pages.inventory import InventoryPage
+from pages.actions import ActionsPage
 from pages.placeholder import PlaceholderPage
 
 # ── Colour palette (kept identical to Arcane Shield) ─────────────────────────────
@@ -175,8 +177,8 @@ class App(ctk.CTk):
             # Character Sheet (live) — owns the character picker
             "character_sheet": CharacterSheetPage(self._content, self.db, self),
             # Player tabs (placeholders)
-            "actions":    stub("Actions", "Track your attacks, spells, and other actions in combat."),
-            "inventory":  stub("Inventory", "Carry, equip, and manage your gear and treasure."),
+            "actions":    ActionsPage(self._content, self.db, self),
+            "inventory":  InventoryPage(self._content, self.db, self),
             "spells_avail": SpellsAvailablePage(self._content, self.db, self),
             "spellbook":    SpellbookPage(self._content, self.db, self),
             "features":   stub("Features & Traits", "Class features, racial traits, and feats you've gained."),
