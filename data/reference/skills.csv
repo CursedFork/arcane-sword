@@ -1,0 +1,19 @@
+name,ability,description,sort_order
+Acrobatics,Dexterity,"Keep your balance on tricky terrain, tumble, or slip free of a grapple.",0
+Animal Handling,Wisdom,"Calm or control an animal, read its intentions, or handle a mount in a crisis.",1
+Arcana,Intelligence,"Recall lore about spells, magic items, eldritch symbols, and the planes.",2
+Athletics,Strength,"Climb, jump, swim, grapple, shove, or muscle past physical obstacles.",3
+Deception,Charisma,"Convincingly hide the truth in word or deed; mislead, bluff, or disguise intent.",4
+History,Intelligence,"Recall lore about events, ancient kingdoms, wars, and legendary figures.",5
+Insight,Wisdom,Read a creature's true intentions — detect a lie or predict a next move.,6
+Intimidation,Charisma,"Influence through overt threats, hostile actions, or sheer menace.",7
+Investigation,Intelligence,"Deduce from clues, search for hidden details, infer how something works.",8
+Medicine,Wisdom,Stabilize a dying creature or diagnose an illness.,9
+Nature,Intelligence,"Recall lore about terrain, plants, animals, weather, and natural cycles.",10
+Perception,Wisdom,"Spot, hear, or otherwise notice the presence of something.",11
+Performance,Charisma,"Delight an audience with music, dance, acting, or storytelling.",12
+Persuasion,Charisma,"Influence with tact, social grace, and good faith.",13
+Religion,Intelligence,"Recall lore about deities, rites, prayers, and holy symbols.",14
+Sleight of Hand,Dexterity,"Pick pockets, plant an item, conceal an object, or perform legerdemain.",15
+Stealth,Dexterity,"Hide, move silently, and slip past notice.",16
+Survival,Wisdom,"Track, hunt, navigate the wilds, forecast weather, and avoid natural hazards.",17

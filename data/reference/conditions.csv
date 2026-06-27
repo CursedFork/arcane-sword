@@ -1,0 +1,38 @@
+name,description,sort_order
+Blinded,"- Can't see; automatically fails any check requiring sight.
+- Attack rolls against the creature have **advantage**; its own attack rolls have **disadvantage**.",0
+Charmed,"- Can't attack the charmer or target them with harmful effects.
+- The charmer has **advantage** on social ability checks to interact with the creature.",1
+Deafened,- Can't hear; automatically fails any check requiring hearing.,2
+Exhaustion,"Measured in 6 levels (cumulative):
+1. Disadvantage on ability checks
+2. Speed halved
+3. Disadvantage on attack rolls & saving throws
+4. Hit point maximum halved
+5. Speed reduced to 0
+6. Death.
+A long rest removes one level (with food & drink).",3
+Frightened,"- Disadvantage on ability checks and attack rolls while the source of fear is in line of sight.
+- Can't willingly move closer to the source.",4
+Grappled,"- Speed becomes 0; can't benefit from bonuses to speed.
+- Ends if the grappler is incapacitated or the creature is removed from reach.",5
+Incapacitated,- Can't take actions or reactions.,6
+Invisible,"- Impossible to see without special senses; counts as heavily obscured.
+- Attack rolls against the creature have **disadvantage**; its own attack rolls have **advantage**.",7
+Paralyzed,"- Incapacitated; can't move or speak.
+- Automatically fails STR and DEX saves.
+- Attacks against it have advantage; any hit from within 5 ft. is a **critical hit**.",8
+Petrified,"- Transformed to solid substance; incapacitated, can't move or speak, unaware.
+- Weight x10, stops aging; attacks have advantage; fails STR & DEX saves.
+- Resistance to all damage; immune to poison and disease.",9
+Poisoned,- Disadvantage on attack rolls and ability checks.,10
+Prone,"- Can only crawl unless it stands up (costs half its movement).
+- Disadvantage on attack rolls.
+- Attacks within 5 ft. have advantage; ranged attacks against it have disadvantage.",11
+Restrained,"- Speed becomes 0.
+- Attacks against it have advantage; its own attacks have disadvantage.
+- Disadvantage on DEX saving throws.",12
+Stunned,"- Incapacitated, can't move, can speak only falteringly.
+- Automatically fails STR and DEX saves; attacks against it have advantage.",13
+Unconscious,"- Incapacitated, can't move or speak, unaware; drops what it's holding and falls prone.
+- Fails STR & DEX saves; attacks have advantage; hits within 5 ft. are **critical hits**.",14

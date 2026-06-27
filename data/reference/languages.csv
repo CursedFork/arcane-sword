@@ -1,0 +1,19 @@
+name,category,script,typical_speakers,description,sort_order
+Common,Standard,Common,"Humans, most civilized folk",The trade tongue of most of the multiverse; nearly everyone speaks it.,0
+Dwarvish,Standard,Dwarvish,Dwarves,Full of hard consonants and guttural sounds; carries into runic writing.,1
+Elvish,Standard,Elvish,Elves,"Fluid, with subtle intonations and intricate grammar; a beautiful script.",2
+Giant,Standard,Dwarvish,"Giants, ogres","The language of giantkind, descended from the Ordning's ancient tongue.",3
+Gnomish,Standard,Dwarvish,Gnomes,Known for its technical treatises and catalogs of knowledge.,4
+Goblin,Standard,Dwarvish,"Goblinoids (goblins, hobgoblins, bugbears)",A harsh tongue spoken across goblinoid warbands.,5
+Halfling,Standard,Common,Halflings,Rarely written; halflings pass it along orally and keep few secrets in it.,6
+Orc,Standard,Dwarvish,Orcs,"A grating language with hard consonants, borrowing the Dwarvish script.",7
+Abyssal,Exotic,Infernal,"Demons, chaotic-evil outsiders","The chaotic, vile speech of the demons of the Abyss.",8
+Celestial,Exotic,Celestial,"Celestials (angels, devas)",The melodic language of the upper planes.,9
+Draconic,Exotic,Draconic,"Dragons, dragonborn, kobolds",Thought to be one of the oldest languages; used in much arcane writing.,10
+Deep Speech,Exotic,—,"Aberrations (mind flayers, beholders)",An alien tongue of aberrations; impossible for most to speak without practice.,11
+Infernal,Exotic,Infernal,"Devils, lawful-evil outsiders","The precise, contractual language of the Nine Hells.",12
+Primordial,Exotic,Dwarvish,Elementals,"The elemental tongue, with dialects Aquan, Auran, Ignan, and Terran.",13
+Sylvan,Exotic,Elvish,Fey creatures,The language of the Feywild and its fey inhabitants.,14
+Undercommon,Exotic,Elvish,"Underdark traders (drow, etc.)",The trade language of the Underdark.,15
+Druidic,Secret,Druidic,Druids only,The secret language of druids; outsiders cannot learn it. Can leave hidden messages.,16
+Thieves' Cant,Secret,—,Rogues,"A secret mix of dialect, jargon, and code that lets rogues hide messages in conversation.",17
