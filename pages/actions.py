@@ -41,18 +41,6 @@ def classify_timing(text: str) -> str | None:
     return None
 
 
-def _empty(parent, msg):
-    for w in parent.winfo_children():
-        w.destroy()
-    card = ctk.CTkFrame(parent, fg_color=SURFACE, corner_radius=12)
-    card.pack(expand=True, pady=80, padx=80, ipadx=30, ipady=20)
-    ctk.CTkLabel(card, text="No character selected",
-                 font=ctk.CTkFont(size=18, weight="bold"), text_color=TEXT
-                 ).pack(pady=(20, 6), padx=30)
-    ctk.CTkLabel(card, text=msg, text_color=MUTED, font=ctk.CTkFont(size=12)
-                 ).pack(pady=(0, 20), padx=30)
-
-
 class ActionsPage(ctk.CTkFrame):
     def __init__(self, parent, db, app=None):
         super().__init__(parent, fg_color=BG)
@@ -72,9 +60,9 @@ class ActionsPage(ctk.CTkFrame):
         for w in self._scroll.winfo_children():
             w.destroy()
         if not self._char:
-            _empty(self, "Create or select a character on the Character Sheet tab.")
-            for w in self._scroll.winfo_children():
-                w.destroy()
+            ctk.CTkLabel(self._scroll, text="No character selected — create or select one "
+                         "on the Character Sheet tab.", text_color=MUTED,
+                         font=ctk.CTkFont(size=13)).pack(pady=40)
             return
         if not self._spell_by_id:
             for sp in self.db.list_spells():
