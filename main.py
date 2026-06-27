@@ -20,6 +20,7 @@ from pages.conditions import ConditionsPage
 from pages.skills import SkillsPage
 from pages.languages import LanguagesPage
 from pages.items import ItemsPage
+from pages.character_sheet import CharacterSheetPage
 from pages.placeholder import PlaceholderPage
 
 # ── Colour palette (kept identical to Arcane Shield) ─────────────────────────────
@@ -76,6 +77,10 @@ class App(ctk.CTk):
                 pass
 
         self.db = Database()
+
+        # The currently-selected character. Every player tab reads this; the
+        # Character Sheet tab owns the picker that sets it.
+        self.active_character_id: int | None = None
 
         # Grid: sidebar col 0 (fixed) + content col 1 (flex)
         self.grid_columnconfigure(1, weight=1)
@@ -165,9 +170,9 @@ class App(ctk.CTk):
             "skills":     SkillsPage(self._content, self.db),
             "languages":  LanguagesPage(self._content, self.db),
             "items":      ItemsPage(self._content, self.db),
+            # Character Sheet (live) — owns the character picker
+            "character_sheet": CharacterSheetPage(self._content, self.db, self),
             # Player tabs (placeholders)
-            "character_sheet": stub("Character Sheet",
-                "Your character's core stats, abilities, and saves will live here."),
             "actions":    stub("Actions", "Track your attacks, spells, and other actions in combat."),
             "inventory":  stub("Inventory", "Carry, equip, and manage your gear and treasure."),
             "spellbook":  stub("Spellbook", "Prepare and cast from your known and prepared spells."),

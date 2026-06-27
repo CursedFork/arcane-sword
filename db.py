@@ -193,6 +193,9 @@ def _migrate(conn: sqlite3.Connection) -> None:
             death_save_success INTEGER NOT NULL DEFAULT 0,
             death_save_fail INTEGER NOT NULL DEFAULT 0,
             prof_bonus_override INTEGER,
+            passive_perception INTEGER,
+            passive_insight INTEGER,
+            passive_investigation INTEGER,
             conditions TEXT NOT NULL DEFAULT '[]',
             defenses TEXT NOT NULL DEFAULT '{}',
             background_info TEXT NOT NULL DEFAULT '',
@@ -289,13 +292,17 @@ def _migrate(conn: sqlite3.Connection) -> None:
     # Versioned one-time data migrations (PRAGMA user_version is the schema rev).
     #   rev 1 — reference tables (scaffold)
     #   rev 2 — player-character tables (created above via CREATE TABLE IF NOT EXISTS)
+    #   rev 3 — passive-sense manual-override columns on characters
     try:
         ver = conn.execute("PRAGMA user_version").fetchone()[0]
-        # No row-level migrations needed yet; new tables are additive. Bumping the
-        # version anchors this rev so future migrations can branch on it.
-        if ver < 2:
-            pass
-        conn.execute("PRAGMA user_version = 2")
+        if ver < 3:
+            # Backfill the passive override columns onto pre-rev-3 character tables.
+            for col in ("passive_perception", "passive_insight", "passive_investigation"):
+                try:
+                    conn.execute(f"ALTER TABLE characters ADD COLUMN {col} INTEGER")
+                except Exception:
+                    pass  # already present (fresh DBs get them from CREATE TABLE)
+        conn.execute("PRAGMA user_version = 3")
     except Exception:
         pass
 
@@ -876,8 +883,13 @@ class Database:
         "xp", "inspiration", "str", "dex", "con", "int", "wis", "cha",
         "hp_max", "hp_current", "hp_temp", "ac", "speed", "initiative_misc",
         "hit_dice_used", "death_save_success", "death_save_fail",
-        "prof_bonus_override", "conditions", "defenses", "background_info",
+        "prof_bonus_override", "passive_perception", "passive_insight",
+        "passive_investigation", "conditions", "defenses", "background_info",
     ]
+    # Columns where NULL is meaningful ("not set" / "derive"), not coerced to 0.
+    _CHAR_NULLABLE_INT_COLS = {
+        "prof_bonus_override", "passive_perception", "passive_insight", "passive_investigation",
+    }
 
     @staticmethod
     def _char_int_default(col: str) -> int:
@@ -899,7 +911,7 @@ class Database:
                     vals.append(json.dumps(v))
                 else:
                     vals.append(v if (isinstance(v, str) and v) else "{}")
-            elif c == "prof_bonus_override":
+            elif c in self._CHAR_NULLABLE_INT_COLS:
                 vals.append(_int(v, None))
             elif c in self._CHAR_INT_COLS:
                 vals.append(_int(v, self._char_int_default(c)))
@@ -1128,6 +1140,10 @@ class Database:
             "hp_temp": _int(row.get("hp_temp"), 0),
             "ac": _int(row.get("ac"), 10), "speed": _int(row.get("speed"), 30),
             "initiative_misc": _int(row.get("initiative_misc"), 0),
+            # Passive senses: stored only as a manual override (NULL = derive).
+            "passive_perception": _int(row.get("passive_perception"), None),
+            "passive_insight": _int(row.get("passive_insight"), None),
+            "passive_investigation": _int(row.get("passive_investigation"), None),
             "conditions": _split_semi(row.get("conditions")),
             "defenses": {
                 "resist": _split_semi(row.get("resistances")),
