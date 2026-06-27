@@ -24,6 +24,9 @@ from pages.character_sheet import CharacterSheetPage
 from pages.spellcasting import SpellsAvailablePage, SpellbookPage
 from pages.inventory import InventoryPage
 from pages.actions import ActionsPage
+from pages.features import FeaturesPage
+from pages.background import BackgroundPage
+from pages.leveling import LevelUpPage
 from pages.placeholder import PlaceholderPage
 
 # ── Colour palette (kept identical to Arcane Shield) ─────────────────────────────
@@ -54,6 +57,7 @@ NAV_CONTENT = [
     ("spells_avail", "✨  Spells — Available"),
     ("spellbook",    "📕  Spellbook"),
     ("features",     "🌟  Features & Traits"),
+    ("background",   "📜  Background"),
     ("level_up",     "⬆  Level-Up"),
     ("rest",         "🌙  Rest"),
     ("campaign",     "✎  Campaign Notes"),
@@ -181,8 +185,9 @@ class App(ctk.CTk):
             "inventory":  InventoryPage(self._content, self.db, self),
             "spells_avail": SpellsAvailablePage(self._content, self.db, self),
             "spellbook":    SpellbookPage(self._content, self.db, self),
-            "features":   stub("Features & Traits", "Class features, racial traits, and feats you've gained."),
-            "level_up":   stub("Level-Up", "Step through choices as your character gains a level."),
+            "features":   FeaturesPage(self._content, self.db, self),
+            "background": BackgroundPage(self._content, self.db, self),
+            "level_up":   LevelUpPage(self._content, self.db, self),
             "rest":       stub("Rest", "Take short and long rests to recover resources."),
             "campaign":   stub("Campaign Notes", "Keep session notes, quests, and contacts for your campaign."),
             "import":     stub("Import Character", "Import a character built elsewhere into Arcane Sword."),
