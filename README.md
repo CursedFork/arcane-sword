@@ -95,6 +95,24 @@ On first launch the app:
 Then click **+ New** on the Character Sheet to start a character, or import one
 (below).
 
+## Desktop launcher (no console window)
+
+To open Arcane Sword from your Desktop with a single click — and **without** a
+command-prompt window — create a shortcut once:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File install-desktop-shortcut.ps1
+```
+
+This puts an **"Arcane Sword"** shortcut on your Desktop that launches the app
+through `pythonw.exe` (the windowed Python interpreter), so no console appears —
+the app window just opens. Re-run the script any time (for example after dropping
+in a new `icon.ico` logo) to refresh the shortcut.
+
+> First-time setup only: make sure the dependencies are installed once with
+> `pip install -r requirements.txt` (or a single `run.bat`). After that, use the
+> Desktop shortcut for everyday launching.
+
 ## Importing a character
 
 A character is one row in a CSV using the columns documented in
