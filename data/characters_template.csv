@@ -1,0 +1,7 @@
+name,player_name,race,subrace,background,alignment,xp,inspiration,classes,str,dex,con,int,wis,cha,hp_max,hp_current,hp_temp,ac,speed,initiative_misc,skill_proficiencies,saving_throws,passive_perception,passive_insight,passive_investigation,conditions,resistances,immunities,vulnerabilities,languages,tool_proficiencies,weapon_proficiencies,armor_proficiencies,inventory,spells_known,spells_prepared,features,background_info,notes
+Lyra Moonwhisper,Andrew,Elf,High Elf,Sage,Chaotic Good,14000,1,Wizard(Evocation):5;Cleric(Life Domain):2,8,16,14,18,12,10,44,44,0,13,30,0,Arcana;History;*Investigation;Insight,INT;WIS,11,13,18,,Fire,,Cold,Common;Elvish;Draconic;Celestial,Calligrapher's Supplies,Daggers;Quarterstaffs;Light Crossbows,Light Armor,Quarterstaff:1;Spellbook:1;Potion of Healing:3;Component Pouch:1,Fire Bolt;Mage Hand;Shield;Magic Missile;Fireball;Counterspell;Cure Wounds,Shield;Magic Missile;Fireball;Cure Wounds,"Race|Darkvision|See in dim light within 60 ft.;;Class|Arcane Recovery|Recover spell slots on a short rest, once per day.;;Feat|War Caster|Advantage on CON saves to maintain concentration.","## Personality
+Curious to a fault.
+
+**Ideal:** Knowledge.
+**Bond:** My spellbook is my life's work.
+**Flaw:** I overlook danger when a mystery beckons.","Met the party in Waterdeep. Searching for her missing mentor, Old Galen."
