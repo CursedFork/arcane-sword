@@ -37,6 +37,38 @@ THEMES: dict[str, dict] = {
         "ACCENT": "#c0832e", "ACCENT_H": "#e0a64a", "TEXT": "#f0e4cf", "MUTED": "#a8906c",
         "DANGER": "#d0473a", "GOOD": "#8bbf52", "GOLD": "#e6c258",
     },
+
+    # ── Simple colour-only themes, one per ability score ─────────────────────
+    "STR Red": {
+        "BG": "#120c0c", "SURFACE": "#1c1313", "SURFACE2": "#271a1a", "BORDER": "#3a2626",
+        "ACCENT": "#e0473a", "ACCENT_H": "#f26a5c", "TEXT": "#f0e3e1", "MUTED": "#a08e8e",
+        "DANGER": "#c0392b", "GOOD": "#6fbf6a", "GOLD": "#e0b84a",
+    },
+    "DEX Green": {
+        "BG": "#0c120d", "SURFACE": "#131e16", "SURFACE2": "#1a291f", "BORDER": "#26392d",
+        "ACCENT": "#46c46a", "ACCENT_H": "#6fe08f", "TEXT": "#e3f0e6", "MUTED": "#8ea596",
+        "DANGER": "#e0573f", "GOOD": "#6fe08f", "GOLD": "#e0c64a",
+    },
+    "CON Orange": {
+        "BG": "#130d07", "SURFACE": "#1e150c", "SURFACE2": "#291e10", "BORDER": "#3d2c18",
+        "ACCENT": "#e8893a", "ACCENT_H": "#f7a557", "TEXT": "#f0e6da", "MUTED": "#a8917c",
+        "DANGER": "#d9453a", "GOOD": "#8bbf52", "GOLD": "#e6b84a",
+    },
+    "INT Blue": {
+        "BG": "#0b0f15", "SURFACE": "#141b26", "SURFACE2": "#1c2636", "BORDER": "#2a3850",
+        "ACCENT": "#4a86e0", "ACCENT_H": "#6fa6f2", "TEXT": "#e0eaf5", "MUTED": "#8a99ad",
+        "DANGER": "#e0573f", "GOOD": "#52be80", "GOLD": "#e0b84a",
+    },
+    "WIS Purple": {
+        "BG": "#0f0c16", "SURFACE": "#181324", "SURFACE2": "#211a30", "BORDER": "#322748",
+        "ACCENT": "#9a6fd8", "ACCENT_H": "#b48ce8", "TEXT": "#e7e0f2", "MUTED": "#978aad",
+        "DANGER": "#e0573f", "GOOD": "#52be80", "GOLD": "#e0b84a",
+    },
+    "CHA Pink": {
+        "BG": "#140a10", "SURFACE": "#1f121a", "SURFACE2": "#2b1925", "BORDER": "#422638",
+        "ACCENT": "#e060a0", "ACCENT_H": "#f582ba", "TEXT": "#f0e0ea", "MUTED": "#ad8a9d",
+        "DANGER": "#e0573f", "GOOD": "#52be80", "GOLD": "#e0b84a",
+    },
 }
 
 DEFAULT_THEME = "Mystic Blue"
