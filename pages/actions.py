@@ -13,7 +13,7 @@ Custom attacks/actions are stored as character_features rows (source_type
 import tkinter as tk
 import customtkinter as ctk
 
-from pages import weapon_rules
+from pages import weapon_rules, theme, tw_helpers
 
 BG       = "#0f0f13"
 SURFACE  = "#1a1a24"
@@ -135,14 +135,18 @@ class ActionsPage(ctk.CTkFrame):
                      font=ctk.CTkFont(size=14, weight="bold")).pack(anchor="w", padx=4, pady=(12, 2))
 
     def _render(self):
+        tw_helpers.tip(self._scroll, "Attacks are derived from your equipped weapons "
+                       "(equip them on the Inventory tab). Spells are grouped by casting time.")
+        simple = theme.tw("simple_mode")
         # Attacks
         bar = ctk.CTkFrame(self._scroll, fg_color="transparent")
         bar.pack(fill="x", padx=4, pady=(2, 0))
         ctk.CTkLabel(bar, text="Attacks", text_color=ACCENT,
                      font=ctk.CTkFont(size=14, weight="bold")).pack(side="left")
-        ctk.CTkButton(bar, text="＋ Custom attack", width=120, height=26, fg_color=SURFACE2,
-                      hover_color=BORDER, text_color=TEXT, font=ctk.CTkFont(size=11),
-                      command=self._add_attack_dialog).pack(side="right")
+        if not simple:  # custom entries are an advanced feature
+            ctk.CTkButton(bar, text="＋ Custom attack", width=120, height=26, fg_color=SURFACE2,
+                          hover_color=BORDER, text_color=TEXT, font=ctk.CTkFont(size=11),
+                          command=self._add_attack_dialog).pack(side="right")
 
         attacks = self._weapon_attacks()
         manual = self._manual_attacks()
@@ -161,9 +165,10 @@ class ActionsPage(ctk.CTkFrame):
         bar2.pack(fill="x", padx=4, pady=(16, 0))
         ctk.CTkLabel(bar2, text="Other Actions", text_color=ACCENT,
                      font=ctk.CTkFont(size=14, weight="bold")).pack(side="left")
-        ctk.CTkButton(bar2, text="＋ Custom action", width=120, height=26, fg_color=SURFACE2,
-                      hover_color=BORDER, text_color=TEXT, font=ctk.CTkFont(size=11),
-                      command=self._add_action_dialog).pack(side="right")
+        if not simple:
+            ctk.CTkButton(bar2, text="＋ Custom action", width=120, height=26, fg_color=SURFACE2,
+                          hover_color=BORDER, text_color=TEXT, font=ctk.CTkFont(size=11),
+                          command=self._add_action_dialog).pack(side="right")
 
         spells = self._spell_actions()
         feats = self._feature_actions()

@@ -14,6 +14,7 @@ import customtkinter as ctk
 from db import Database
 from pages import levelup_rules as lr
 from pages import reference_lookup as ref
+from pages import theme, tw_helpers
 
 BG       = "#0f0f13"
 SURFACE  = "#1a1a24"
@@ -151,6 +152,9 @@ class LevelUpPage(ctk.CTkFrame):
     # ── render ────────────────────────────────────────────────────────────────
     def _render(self):
         c = self._char
+        tw_helpers.tip(self._scroll, "Level up an existing class, or add a new one to "
+                       "multiclass. Each level lets you pick HP (roll or average), a "
+                       "subclass at the right level, and an ability boost or feat at ASI levels.")
         head = ctk.CTkFrame(self._scroll, fg_color=SURFACE, corner_radius=8)
         head.pack(fill="x", padx=4, pady=(2, 8))
         ctk.CTkLabel(head, text=c["name"], text_color=TEXT,
@@ -169,7 +173,12 @@ class LevelUpPage(ctk.CTkFrame):
         for cls in classes:
             self._class_row_widget(cls)
 
-        # Add multiclass
+        # Add multiclass — an advanced feature; hidden in Simple mode.
+        if theme.tw("simple_mode"):
+            ctk.CTkLabel(self._scroll, text="Multiclassing is hidden in Simple mode "
+                         "(enable it in Settings).", text_color=MUTED,
+                         font=ctk.CTkFont(size=11)).pack(anchor="w", padx=4, pady=(16, 4))
+            return
         ctk.CTkLabel(self._scroll, text="Add a Class (multiclass)", text_color=ACCENT,
                      font=ctk.CTkFont(size=14, weight="bold")).pack(anchor="w", padx=4, pady=(16, 2))
         add = ctk.CTkFrame(self._scroll, fg_color=SURFACE2, corner_radius=8)
@@ -212,7 +221,7 @@ class LevelUpPage(ctk.CTkFrame):
     def _add_class_clicked(self):
         class_name = self._new_class_var.get()
         ok, desc = self.check_multiclass(class_name)
-        if not ok:
+        if not ok and theme.tw("warnings"):  # prereq alert is a rules-warning helper
             if not messagebox.askyesno(
                     "Multiclass prerequisite",
                     f"You don't meet the prerequisite for {class_name} ({desc}).\n\n"

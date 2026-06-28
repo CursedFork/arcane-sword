@@ -11,6 +11,7 @@ import customtkinter as ctk
 
 from db import Database
 from pages.md_widget import MarkdownText
+from pages import tw_helpers
 
 # ── palette (kept identical to the rest of the app) ─────────────────────────────
 BG       = "#0f0f13"
@@ -315,6 +316,7 @@ class CharacterSheetPage(ctk.CTkFrame):
 
     def _saves(self, parent):
         card = self._card(parent, "Saving Throws")
+        tw_helpers.hint(card, "Save = ability modifier (+ proficiency bonus if the dot is filled).")
         grid = ctk.CTkFrame(card, fg_color="transparent")
         grid.pack(fill="x", padx=12, pady=(2, 12))
         grid.grid_columnconfigure((0, 1), weight=1)
@@ -480,6 +482,7 @@ class CharacterSheetPage(ctk.CTkFrame):
 
     def _passives(self, parent):
         card = self._card(parent, "Passive Senses")
+        tw_helpers.hint(card, "Passive = 10 + that skill's total (leave the box on 'auto' to derive).")
         body = ctk.CTkFrame(card, fg_color="transparent")
         body.pack(fill="x", padx=12, pady=(2, 12))
         for label, skill, col in PASSIVES:

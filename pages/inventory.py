@@ -11,7 +11,7 @@ import customtkinter as ctk
 
 from pages.md_widget import MarkdownText
 from pages.ui_util import ScrollList, bind_row
-from pages import weapon_rules
+from pages import weapon_rules, theme
 
 BG       = "#0f0f13"
 SURFACE  = "#1a1a24"
@@ -225,7 +225,10 @@ class InventoryPage(ctk.CTkFrame):
         self.refresh()
 
     def _toggle_attuned(self, row):
-        if not row.get("attuned") and self._attuned_count() >= ATTUNE_CAP:
+        # The attunement cap is a "training wheels" rules warning; with it off,
+        # power users can exceed 3 deliberately.
+        if (not row.get("attuned") and self._attuned_count() >= ATTUNE_CAP
+                and theme.tw("warnings")):
             messagebox.showwarning(
                 "Attunement limit",
                 f"You can be attuned to at most {ATTUNE_CAP} items at once.\n"

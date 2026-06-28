@@ -4,8 +4,14 @@ import os
 sys.path.insert(0, os.path.dirname(__file__))
 
 import ctypes
+import tkinter as tk
 import customtkinter as ctk
 from db import Database
+from pages import theme
+try:
+    from PIL import Image, ImageTk
+except Exception:  # Pillow is a dependency, but degrade gracefully
+    Image = ImageTk = None
 
 # Tell Windows this is its own app so the taskbar shows the custom icon
 try:
@@ -30,6 +36,7 @@ from pages.leveling import LevelUpPage
 from pages.rest import RestPage
 from pages.campaign_notes import CampaignNotesPage
 from pages.character_io import CharacterIOPage
+from pages.settings_tab import SettingsPage
 from pages.placeholder import PlaceholderPage
 
 # ── Colour palette (kept identical to Arcane Shield) ─────────────────────────────
@@ -66,6 +73,7 @@ NAV_CONTENT = [
     ("items",        "✦  Items"),
 ]
 NAV_BOTTOM = [
+    ("settings",     "⚙  Settings"),
     ("import",       "⬆  Import / Manage"),
 ]
 NAV_ITEMS = NAV_TOP + NAV_CONTENT + NAV_BOTTOM
@@ -74,6 +82,11 @@ NAV_ITEMS = NAV_TOP + NAV_CONTENT + NAV_BOTTOM
 class App(ctk.CTk):
     def __init__(self):
         super().__init__()
+        # Load saved theme + training-wheels and recolour every page module
+        # before any UI is built.
+        theme.load()
+        theme.apply_all()
+
         self.title("Arcane Sword")
         self.geometry("1400x900")
         self.minsize(1000, 600)
@@ -97,15 +110,54 @@ class App(ctk.CTk):
         self.grid_columnconfigure(1, weight=1)
         self.grid_rowconfigure(0, weight=1)
 
+        self._bg_label = None
+        self._bg_photo = None
+        self._bg_resize_id = None
+        self._build_backdrop()
+
         self._build_sidebar()
         self._build_content()
+        self.bind("<Configure>", self._on_root_resize)
+
+    # ── Full-window backdrop ─────────────────────────────────────────────────────
+
+    def _build_backdrop(self):
+        if ImageTk is None:
+            return
+        self._bg_label = tk.Label(self, bd=0, highlightthickness=0)
+        self._bg_label.place(x=0, y=0, relwidth=1, relheight=1)
+        self._bg_label.lower()
+        self.after(60, self._render_backdrop)
+
+    def _render_backdrop(self):
+        if self._bg_label is None or Image is None:
+            return
+        w, h = max(self.winfo_width(), 100), max(self.winfo_height(), 100)
+        src = theme.backdrop_source()
+        if src is None:
+            return
+        try:
+            img = src.resize((w, h), Image.LANCZOS)
+            self._bg_photo = ImageTk.PhotoImage(img)
+            self._bg_label.configure(image=self._bg_photo)
+            self._bg_label.lower()
+        except Exception:
+            pass
+
+    def _on_root_resize(self, event):
+        if event.widget is not self or self._bg_label is None:
+            return
+        if self._bg_resize_id is not None:
+            self.after_cancel(self._bg_resize_id)
+        self._bg_resize_id = self.after(180, self._render_backdrop)
 
     # ── Sidebar ────────────────────────────────────────────────────────────────
 
     def _build_sidebar(self):
-        sb = ctk.CTkFrame(self, width=200, fg_color=SURFACE, corner_radius=0)
-        sb.grid(row=0, column=0, sticky="nsew")
+        sb = ctk.CTkFrame(self, width=200, fg_color=SURFACE, corner_radius=10)
+        sb.grid(row=0, column=0, sticky="nsew", padx=(8, 4), pady=8)
         sb.grid_propagate(False)
+        self._sidebar = sb
 
         ctk.CTkLabel(
             sb, text="🗡 ARCANE SWORD",
@@ -164,9 +216,9 @@ class App(ctk.CTk):
 
     # ── Content area ───────────────────────────────────────────────────────────
 
-    def _build_content(self):
-        self._content = ctk.CTkFrame(self, fg_color=BG, corner_radius=0)
-        self._content.grid(row=0, column=1, sticky="nsew")
+    def _build_content(self, start="character_sheet"):
+        self._content = ctk.CTkFrame(self, fg_color=BG, corner_radius=10)
+        self._content.grid(row=0, column=1, sticky="nsew", padx=(4, 8), pady=8)
         self._content.grid_columnconfigure(0, weight=1)
         self._content.grid_rowconfigure(0, weight=1)
 
@@ -194,6 +246,7 @@ class App(ctk.CTk):
             "rest":       RestPage(self._content, self.db, self),
             "campaign":   CampaignNotesPage(self._content, self.db, self),
             "import":     CharacterIOPage(self._content, self.db, self),
+            "settings":   SettingsPage(self._content, self.db, self),
         }
 
         for page in self._pages.values():
@@ -201,7 +254,7 @@ class App(ctk.CTk):
             page.grid_remove()
 
         self._current: str | None = None
-        self.show_page("character_sheet")
+        self.show_page(start if start in self._pages else "character_sheet")
 
     # ── Navigation ─────────────────────────────────────────────────────────────
 
@@ -220,6 +273,30 @@ class App(ctk.CTk):
         btn = self._nav_btns.get(name)
         if btn:
             btn.configure(text_color=TEXT, fg_color=SURFACE2)
+
+    # ── Theme / settings application ─────────────────────────────────────────────
+
+    def apply_theme(self, name: str):
+        """Switch theme live: recolour modules, rebuild the UI, repaint backdrop."""
+        theme.set_active(name)
+        theme.apply_all()
+        self._rebuild_ui()
+        self._render_backdrop()
+
+    def apply_settings(self):
+        """Re-render after a training-wheels toggle (pages read the flags live)."""
+        self._rebuild_ui()
+
+    def _rebuild_ui(self):
+        keep = self._current or "character_sheet"
+        try:
+            self._sidebar.destroy()
+            self._content.destroy()
+        except Exception:
+            pass
+        self.configure(fg_color=BG)
+        self._build_sidebar()
+        self._build_content(start=keep)
 
 
 # ── Entry point ────────────────────────────────────────────────────────────────
