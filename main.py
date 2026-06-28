@@ -129,6 +129,17 @@ class App(ctk.CTk):
         self._bg_label.lower()
         self.after(60, self._render_backdrop)
 
+    @staticmethod
+    def _fit_cover(img, w, h):
+        """Scale to fill (w, h) preserving aspect ratio, centre-cropping the
+        overflow — so the backdrop is never stretched/distorted."""
+        iw, ih = img.size
+        scale = max(w / iw, h / ih)
+        nw, nh = max(w, int(iw * scale)), max(h, int(ih * scale))
+        img = img.resize((nw, nh), Image.LANCZOS)
+        left, top = (nw - w) // 2, (nh - h) // 2
+        return img.crop((left, top, left + w, top + h))
+
     def _render_backdrop(self):
         if self._bg_label is None or Image is None:
             return
@@ -137,7 +148,7 @@ class App(ctk.CTk):
         if src is None:
             return
         try:
-            img = src.resize((w, h), Image.LANCZOS)
+            img = self._fit_cover(src, w, h)
             self._bg_photo = ImageTk.PhotoImage(img)
             self._bg_label.configure(image=self._bg_photo)
             self._bg_label.lower()
@@ -154,8 +165,10 @@ class App(ctk.CTk):
     # ── Sidebar ────────────────────────────────────────────────────────────────
 
     def _build_sidebar(self):
-        sb = ctk.CTkFrame(self, width=200, fg_color=SURFACE, corner_radius=10)
-        sb.grid(row=0, column=0, sticky="nsew", padx=(8, 4), pady=8)
+        pad = theme.panel_inset()  # margin that reveals the backdrop art
+        sb = ctk.CTkFrame(self, width=200, fg_color=SURFACE, corner_radius=12,
+                          border_width=1, border_color=BORDER)
+        sb.grid(row=0, column=0, sticky="nsew", padx=(pad, pad // 2), pady=pad)
         sb.grid_propagate(False)
         self._sidebar = sb
 
@@ -217,44 +230,45 @@ class App(ctk.CTk):
     # ── Content area ───────────────────────────────────────────────────────────
 
     def _build_content(self, start="character_sheet"):
-        self._content = ctk.CTkFrame(self, fg_color=BG, corner_radius=10)
-        self._content.grid(row=0, column=1, sticky="nsew", padx=(4, 8), pady=8)
-        self._content.grid_columnconfigure(0, weight=1)
-        self._content.grid_rowconfigure(0, weight=1)
-
+        # Pages are parented to the window (over the backdrop) and float in the
+        # content cell with a margin, so the art frames each panel.
         def stub(title, blurb):
-            return PlaceholderPage(self._content, self.db, title=title, blurb=blurb)
+            return PlaceholderPage(self, self.db, title=title, blurb=blurb)
 
         self._pages: dict[str, ctk.CTkFrame] = {
             # Reference browsers (live)
-            "spells":     SpellsPage(self._content, self.db),
-            "char_opts":  CharacterOptionsPage(self._content, self.db),
-            "conditions": ConditionsPage(self._content, self.db),
-            "skills":     SkillsPage(self._content, self.db),
-            "languages":  LanguagesPage(self._content, self.db),
-            "items":      ItemsPage(self._content, self.db),
+            "spells":     SpellsPage(self, self.db),
+            "char_opts":  CharacterOptionsPage(self, self.db),
+            "conditions": ConditionsPage(self, self.db),
+            "skills":     SkillsPage(self, self.db),
+            "languages":  LanguagesPage(self, self.db),
+            "items":      ItemsPage(self, self.db),
             # Character Sheet (live) — owns the character picker
-            "character_sheet": CharacterSheetPage(self._content, self.db, self),
-            # Player tabs (placeholders)
-            "actions":    ActionsPage(self._content, self.db, self),
-            "inventory":  InventoryPage(self._content, self.db, self),
-            "spells_avail": SpellsAvailablePage(self._content, self.db, self),
-            "spellbook":    SpellbookPage(self._content, self.db, self),
-            "features":   FeaturesPage(self._content, self.db, self),
-            "background": BackgroundPage(self._content, self.db, self),
-            "level_up":   LevelUpPage(self._content, self.db, self),
-            "rest":       RestPage(self._content, self.db, self),
-            "campaign":   CampaignNotesPage(self._content, self.db, self),
-            "import":     CharacterIOPage(self._content, self.db, self),
-            "settings":   SettingsPage(self._content, self.db, self),
+            "character_sheet": CharacterSheetPage(self, self.db, self),
+            # Player tabs
+            "actions":    ActionsPage(self, self.db, self),
+            "inventory":  InventoryPage(self, self.db, self),
+            "spells_avail": SpellsAvailablePage(self, self.db, self),
+            "spellbook":    SpellbookPage(self, self.db, self),
+            "features":   FeaturesPage(self, self.db, self),
+            "background": BackgroundPage(self, self.db, self),
+            "level_up":   LevelUpPage(self, self.db, self),
+            "rest":       RestPage(self, self.db, self),
+            "campaign":   CampaignNotesPage(self, self.db, self),
+            "import":     CharacterIOPage(self, self.db, self),
+            "settings":   SettingsPage(self, self.db, self),
         }
 
+        pad = theme.panel_inset()
         for page in self._pages.values():
-            page.grid(row=0, column=0, sticky="nsew", padx=0, pady=0)
+            page.configure(corner_radius=12)
+            page.grid(row=0, column=1, sticky="nsew", padx=(pad // 2, pad), pady=pad)
             page.grid_remove()
 
         self._current: str | None = None
         self.show_page(start if start in self._pages else "character_sheet")
+        if self._bg_label is not None:
+            self._bg_label.lower()
 
     # ── Navigation ─────────────────────────────────────────────────────────────
 
@@ -291,7 +305,8 @@ class App(ctk.CTk):
         keep = self._current or "character_sheet"
         try:
             self._sidebar.destroy()
-            self._content.destroy()
+            for page in self._pages.values():
+                page.destroy()
         except Exception:
             pass
         self.configure(fg_color=BG)

@@ -150,6 +150,9 @@ Open the **⚙ Settings** tab to:
     lower-case and hyphenated (e.g. `mystic-blue.jpg`; `.jpg`/`.png`/`.webp` all
     work), and add a matching palette entry in `pages/theme.py`. If a theme has
     no art, a soft gradient is generated from its palette.
+- **Backdrop frame** — the panels float over the art with a margin; choose how
+  much art shows around them (Subtle / Balanced / Bold). Bolder reveals more of
+  the ornate borders but leaves less room for content.
 - **Toggle "training wheels"** — beginner-friendly helpers you can switch off as
   you get comfortable:
   - *Derivation hints* — show how totals are built (saves, passive senses, …).

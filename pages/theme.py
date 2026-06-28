@@ -40,6 +40,11 @@ THEMES: dict[str, dict] = {
 }
 
 DEFAULT_THEME = "Mystic Blue"
+
+# How big a margin reveals the backdrop art around the floating panels.
+PANEL_INSETS = {"Subtle": 12, "Balanced": 30, "Bold": 60}
+DEFAULT_INSET = "Balanced"
+
 TRAINING_WHEELS = ["hints", "tooltips", "warnings", "simple_mode"]
 _TW_LABELS = {
     "hints": "Derivation hints",
@@ -50,6 +55,7 @@ _TW_LABELS = {
 
 # ── In-memory state (persisted to settings.json) ─────────────────────────────────
 _active = DEFAULT_THEME
+_inset = DEFAULT_INSET
 _tw = {"hints": True, "tooltips": True, "warnings": True, "simple_mode": False}
 
 
@@ -65,11 +71,13 @@ def settings_path() -> Path:
 
 def load() -> None:
     """Load the saved theme + training-wheels flags (best effort)."""
-    global _active
+    global _active, _inset
     try:
         data = json.loads(settings_path().read_text(encoding="utf-8"))
         if data.get("theme") in THEMES:
             _active = data["theme"]
+        if data.get("panel_inset") in PANEL_INSETS:
+            _inset = data["panel_inset"]
         for k in TRAINING_WHEELS:
             if k in data.get("training_wheels", {}):
                 _tw[k] = bool(data["training_wheels"][k])
@@ -80,9 +88,25 @@ def load() -> None:
 def save() -> None:
     try:
         settings_path().write_text(json.dumps(
-            {"theme": _active, "training_wheels": _tw}, indent=2), encoding="utf-8")
+            {"theme": _active, "panel_inset": _inset, "training_wheels": _tw},
+            indent=2), encoding="utf-8")
     except Exception:
         pass
+
+
+def panel_inset_name() -> str:
+    return _inset
+
+
+def panel_inset() -> int:
+    return PANEL_INSETS.get(_inset, PANEL_INSETS[DEFAULT_INSET])
+
+
+def set_panel_inset(name: str) -> None:
+    global _inset
+    if name in PANEL_INSETS:
+        _inset = name
+        save()
 
 
 # ── Theme accessors ──────────────────────────────────────────────────────────────

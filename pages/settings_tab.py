@@ -70,6 +70,22 @@ class SettingsPage(ctk.CTkFrame):
                           command=lambda n=name: self._pick_theme(n)
                           ).pack(fill="x", padx=12, pady=12)
 
+        # ── Backdrop frame (how much art shows around the panels) ────────────
+        ctk.CTkLabel(self._scroll, text="Backdrop Frame", text_color=ACCENT,
+                     font=ctk.CTkFont(size=14, weight="bold")).pack(anchor="w", pady=(8, 2))
+        ctk.CTkLabel(self._scroll, text="How much of the backdrop art shows around the "
+                     "panels. Bolder frames reveal more art but leave less room for content.",
+                     text_color=MUTED, font=ctk.CTkFont(size=11)).pack(anchor="w", pady=(0, 8))
+        frow = ctk.CTkFrame(self._scroll, fg_color="transparent")
+        frow.pack(fill="x", pady=(0, 16))
+        for name in theme.PANEL_INSETS:
+            sel = name == theme.panel_inset_name()
+            ctk.CTkButton(frow, text=name, width=120, height=32,
+                          fg_color=(ACCENT if sel else SURFACE2), hover_color=ACCENT_H,
+                          text_color=TEXT, font=ctk.CTkFont(size=12, weight="bold"),
+                          state=("disabled" if sel else "normal"),
+                          command=lambda n=name: self._pick_inset(n)).pack(side="left", padx=(0, 8))
+
         # ── Training wheels ──────────────────────────────────────────────────
         ctk.CTkLabel(self._scroll, text="Training Wheels", text_color=ACCENT,
                      font=ctk.CTkFont(size=14, weight="bold")).pack(anchor="w", pady=(8, 2))
@@ -97,6 +113,13 @@ class SettingsPage(ctk.CTkFrame):
             self.app.apply_theme(name)
         else:
             theme.set_active(name)
+            self.refresh()
+
+    def _pick_inset(self, name):
+        theme.set_panel_inset(name)
+        if self.app and hasattr(self.app, "apply_settings"):
+            self.app.apply_settings()
+        else:
             self.refresh()
 
     def _toggle_tw(self, flag):
