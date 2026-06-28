@@ -30,18 +30,38 @@ if (-not $pythonw) {
     throw "Could not find pythonw.exe. Install Python 3.10+ (it ships with pythonw) and retry."
 }
 
+# Windows caches shortcut icons by file PATH, so overwriting icon.ico in place
+# won't refresh the Desktop icon. Point the shortcut at a content-hashed copy:
+# a new logo => new hash => new path Windows has never cached => it shows at once.
+$iconLocation = $null
+if (Test-Path $icon) {
+    $hash = (Get-FileHash $icon -Algorithm MD5).Hash.Substring(0, 8).ToLower()
+    $iconDir = Join-Path $proj "assets\shortcut-icon"
+    New-Item -ItemType Directory -Force -Path $iconDir | Out-Null
+    $iconLocation = Join-Path $iconDir "arcane-sword-$hash.ico"
+    Copy-Item $icon $iconLocation -Force
+    # Prune stale hashed copies from previous logos.
+    Get-ChildItem $iconDir -Filter *.ico |
+        Where-Object { $_.FullName -ne $iconLocation } |
+        Remove-Item -Force -ErrorAction SilentlyContinue
+}
+
 $desktop = [Environment]::GetFolderPath("Desktop")
 $lnkPath = Join-Path $desktop "Arcane Sword.lnk"
+if (Test-Path $lnkPath) { Remove-Item $lnkPath -Force }
 
 $shell = New-Object -ComObject WScript.Shell
 $sc = $shell.CreateShortcut($lnkPath)
 $sc.TargetPath = $pythonw
 $sc.Arguments = '"' + $main + '"'
 $sc.WorkingDirectory = $proj
-if (Test-Path $icon) { $sc.IconLocation = $icon }
+if ($iconLocation) { $sc.IconLocation = $iconLocation }
 $sc.Description = "Arcane Sword - D&D 5e player companion"
 $sc.WindowStyle = 1
 $sc.Save()
+
+# Nudge Explorer to re-read the shortcut icon.
+Start-Process ie4uinit.exe -ArgumentList '-show' -ErrorAction SilentlyContinue
 
 Write-Host "Created desktop shortcut:"
 Write-Host "  $lnkPath"

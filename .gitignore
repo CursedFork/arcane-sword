@@ -17,3 +17,6 @@ Thumbs.db
 *.db-wal
 *.db-shm
 *.db.backup_*
+
+# Generated per-machine shortcut icon copy (see install-desktop-shortcut.ps1)
+assets/shortcut-icon/
