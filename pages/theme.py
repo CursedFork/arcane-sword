@@ -18,36 +18,28 @@ from pathlib import Path
 COLOR_KEYS = ["BG", "SURFACE", "SURFACE2", "BORDER", "ACCENT", "ACCENT_H",
               "TEXT", "MUTED", "DANGER", "GOOD", "GOLD"]
 
-# ── Built-in themes (colour-only until you add art) ──────────────────────────────
+# ── Built-in themes ──────────────────────────────────────────────────────────────
+# Palettes are hand-tuned to the backdrop art in assets/themes/<slug>.(jpg|png).
+# More will be added as new art is generated.
 THEMES: dict[str, dict] = {
-    "Arcane Violet": {
-        "BG": "#0f0f13", "SURFACE": "#1a1a24", "SURFACE2": "#22222f", "BORDER": "#2e2e3e",
-        "ACCENT": "#7c5cbf", "ACCENT_H": "#9472d8", "TEXT": "#e2e0f0", "MUTED": "#8a8aa0",
-        "DANGER": "#c0392b", "GOOD": "#52be80", "GOLD": "#e0b040",
+    "Mystic Blue": {  # deep cobalt night sky + cyan arcane glyphs
+        "BG": "#0a0e1a", "SURFACE": "#121a2e", "SURFACE2": "#1a2542", "BORDER": "#29385f",
+        "ACCENT": "#4a86e0", "ACCENT_H": "#6fa6f2", "TEXT": "#dde7f7", "MUTED": "#8294b8",
+        "DANGER": "#e05a52", "GOOD": "#52be80", "GOLD": "#e0b84a",
     },
-    "Crimson Forge": {
-        "BG": "#140d0d", "SURFACE": "#211414", "SURFACE2": "#2b1a1a", "BORDER": "#3d2626",
-        "ACCENT": "#c0392b", "ACCENT_H": "#e0573f", "TEXT": "#f0e2e0", "MUTED": "#a98e8e",
-        "DANGER": "#e74c3c", "GOOD": "#8bbf52", "GOLD": "#e0a840",
+    "Martial Red": {  # blood-crimson battlefield + bronze weapons
+        "BG": "#140707", "SURFACE": "#1f0d0d", "SURFACE2": "#2c1313", "BORDER": "#48201d",
+        "ACCENT": "#c0392b", "ACCENT_H": "#e25140", "TEXT": "#f1ddda", "MUTED": "#b18a86",
+        "DANGER": "#ff5b4d", "GOOD": "#8fbf52", "GOLD": "#cf9b54",
     },
-    "Verdant Grove": {
-        "BG": "#0c130d", "SURFACE": "#15201a", "SURFACE2": "#1c2b22", "BORDER": "#2a3d30",
-        "ACCENT": "#4caf6a", "ACCENT_H": "#6fd88f", "TEXT": "#e2f0e6", "MUTED": "#8aa392",
-        "DANGER": "#c0392b", "GOOD": "#6fd88f", "GOLD": "#e0c040",
-    },
-    "Frostbound": {
-        "BG": "#0b0f16", "SURFACE": "#141a24", "SURFACE2": "#1a2230", "BORDER": "#263040",
-        "ACCENT": "#4aa6d8", "ACCENT_H": "#6fc4ee", "TEXT": "#e0eaf2", "MUTED": "#8a96a8",
-        "DANGER": "#c0392b", "GOOD": "#52be80", "GOLD": "#e0b040",
-    },
-    "Gilded Tome": {
-        "BG": "#15110a", "SURFACE": "#211a10", "SURFACE2": "#2b2216", "BORDER": "#3d3322",
-        "ACCENT": "#c79a3a", "ACCENT_H": "#e0b850", "TEXT": "#f0e8d8", "MUTED": "#a89a80",
-        "DANGER": "#c0392b", "GOOD": "#8bbf52", "GOLD": "#e0b840",
+    "Artificer Bronze": {  # dark workshop brown + copper/amber gears
+        "BG": "#120c06", "SURFACE": "#1d150b", "SURFACE2": "#281d0f", "BORDER": "#3f2e17",
+        "ACCENT": "#c0832e", "ACCENT_H": "#e0a64a", "TEXT": "#f0e4cf", "MUTED": "#a8906c",
+        "DANGER": "#d0473a", "GOOD": "#8bbf52", "GOLD": "#e6c258",
     },
 }
 
-DEFAULT_THEME = "Arcane Violet"
+DEFAULT_THEME = "Mystic Blue"
 TRAINING_WHEELS = ["hints", "tooltips", "warnings", "simple_mode"]
 _TW_LABELS = {
     "hints": "Derivation hints",

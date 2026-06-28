@@ -140,13 +140,16 @@ to bulk-create characters.
 
 Open the **⚙ Settings** tab to:
 
-- **Pick a theme** — five built-in looks (Arcane Violet, Crimson Forge, Verdant
-  Grove, Frostbound, Gilded Tome). The whole app recolours instantly and your
-  choice is remembered. Each theme also paints a full-window backdrop.
-  - **Use your own backdrop art:** drop a PNG into `assets/themes/` named after
-    the theme (lower-case, hyphenated — e.g. `frostbound.png`, `crimson-forge.png`).
-    It's used as that theme's backdrop automatically; otherwise a soft gradient is
-    generated from the palette.
+- **Pick a theme** — the whole app recolours instantly and your choice is
+  remembered. Each theme paints a full-window backdrop from custom art. The
+  built-in set (more added over time):
+  - **Mystic Blue** — deep cobalt night sky and arcane glyphs.
+  - **Martial Red** — blood-crimson battlefield and bronze weapons.
+  - **Artificer Bronze** — dark workshop browns and copper gears.
+  - **Add your own:** drop an image into `assets/themes/` named after the theme,
+    lower-case and hyphenated (e.g. `mystic-blue.jpg`; `.jpg`/`.png`/`.webp` all
+    work), and add a matching palette entry in `pages/theme.py`. If a theme has
+    no art, a soft gradient is generated from its palette.
 - **Toggle "training wheels"** — beginner-friendly helpers you can switch off as
   you get comfortable:
   - *Derivation hints* — show how totals are built (saves, passive senses, …).
