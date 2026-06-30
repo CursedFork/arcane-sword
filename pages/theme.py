@@ -38,6 +38,32 @@ THEMES: dict[str, dict] = {
         "DANGER": "#d0473a", "GOOD": "#8bbf52", "GOLD": "#e6c258",
     },
 
+    "Barbarian Blood Red": {  # brutal crimson stone + warrior weapons
+        "BG": "#0f0505", "SURFACE": "#1a0808", "SURFACE2": "#240d0d", "BORDER": "#3d1515",
+        "ACCENT": "#c23020", "ACCENT_H": "#e04030", "TEXT": "#f0ddd8", "MUTED": "#a07070",
+        "DANGER": "#ff3333", "GOOD": "#7abf52", "GOLD": "#c8904a",
+    },
+    "Bard Purple": {  # rich violet velvet + gold filigree instruments
+        "BG": "#0c0610", "SURFACE": "#160d20", "SURFACE2": "#1e122c", "BORDER": "#341a4a",
+        "ACCENT": "#c060d0", "ACCENT_H": "#d880e8", "TEXT": "#f0e8f5", "MUTED": "#9a7eab",
+        "DANGER": "#e05060", "GOOD": "#60bf80", "GOLD": "#d4a040",
+    },
+    "Fighter Steel": {  # dark slate + cool blue-grey armour and heraldry
+        "BG": "#0a0c10", "SURFACE": "#131720", "SURFACE2": "#1c2030", "BORDER": "#2c3448",
+        "ACCENT": "#7090b8", "ACCENT_H": "#90aed8", "TEXT": "#dce4f0", "MUTED": "#7a8899",
+        "DANGER": "#c05040", "GOOD": "#60b870", "GOLD": "#c0a050",
+    },
+    "Monk Yellow": {  # warm sepia-gold + eastern scrolls and yin-yang
+        "BG": "#0e0a04", "SURFACE": "#1a1208", "SURFACE2": "#241a0c", "BORDER": "#3a2a12",
+        "ACCENT": "#c89030", "ACCENT_H": "#e0aa48", "TEXT": "#f0e8d0", "MUTED": "#a08858",
+        "DANGER": "#d04030", "GOOD": "#7ab840", "GOLD": "#e0b030",
+    },
+    "Wizard Sapphire": {  # deep navy + arcane gold runes and spellbooks
+        "BG": "#05060f", "SURFACE": "#0c0e1e", "SURFACE2": "#121628", "BORDER": "#1e2444",
+        "ACCENT": "#3060d8", "ACCENT_H": "#5080f0", "TEXT": "#d8e4f8", "MUTED": "#6878a8",
+        "DANGER": "#e05050", "GOOD": "#50b878", "GOLD": "#d0a030",
+    },
+
     # ── Simple colour-only themes, one per ability score ─────────────────────
     "STR Red": {
         "BG": "#120c0c", "SURFACE": "#1c1313", "SURFACE2": "#271a1a", "BORDER": "#3a2626",
