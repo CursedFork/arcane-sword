@@ -4,7 +4,7 @@ multiclass prerequisites, subclass timing, ASI levels, and HP gain.
 
 HIT_DICE = {
     "barbarian": 12,
-    "fighter": 10, "paladin": 10, "ranger": 10,
+    "blood hunter": 10, "fighter": 10, "paladin": 10, "ranger": 10,
     "artificer": 8, "bard": 8, "cleric": 8, "druid": 8, "monk": 8,
     "rogue": 8, "warlock": 8,
     "sorcerer": 6, "wizard": 6,
@@ -38,8 +38,8 @@ DEFAULT_SUBCLASS_LEVEL = 3
 _BASE_ASI = {4, 8, 12, 16, 19}
 _EXTRA_ASI = {"fighter": {6, 14}, "rogue": {10}}
 
-CLASS_NAMES = ["Artificer", "Barbarian", "Bard", "Cleric", "Druid", "Fighter",
-               "Monk", "Paladin", "Ranger", "Rogue", "Sorcerer", "Warlock", "Wizard"]
+CLASS_NAMES = ["Artificer", "Barbarian", "Bard", "Blood Hunter", "Cleric", "Druid",
+               "Fighter", "Monk", "Paladin", "Ranger", "Rogue", "Sorcerer", "Warlock", "Wizard"]
 
 _ABBR = {"str": "Strength", "dex": "Dexterity", "con": "Constitution",
          "int": "Intelligence", "wis": "Wisdom", "cha": "Charisma"}

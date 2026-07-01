@@ -251,15 +251,18 @@ class CharacterWizardPage(ctk.CTkFrame):
             cn = d.get("class_name", "").lower()
             level = d.get("level", 1)
             need_c = wd.cantrips_known(cn, level)
-            if len(d.get("cantrips_chosen", [])) < need_c:
-                return f"Choose {need_c} cantrip(s) for your class."
+            # Only block if the DB actually has cantrips to pick from
+            db_cantrips = self.db.list_spells(cls=d.get("class_name", ""), level=0)
+            if need_c > 0 and len(db_cantrips) > 0 and len(d.get("cantrips_chosen", [])) < need_c:
+                return f"Choose {need_c} cantrip(s) for your class (or scroll down to see the list)."
             if not wd.is_preparing_caster(cn):
                 need_s = wd.spells_known_count(cn, level)
+                db_leveled = [s for s in self.db.list_spells(cls=d.get("class_name", "")) if s["level"] > 0]
                 chosen_s = len([s for s in d.get("spells_chosen", []) if s not in d.get("cantrips_chosen", [])])
                 if cn == "ranger" and level < 2:
                     pass  # rangers don't get spells at level 1
-                elif chosen_s < need_s and need_s > 0:
-                    return f"Choose {need_s} spell(s) known for your class."
+                elif len(db_leveled) > 0 and chosen_s < need_s and need_s > 0:
+                    return f"Choose {need_s} spell(s) known for your class (or scroll down to see the list)."
         return ""
 
     # ── Step 1: Identity ──────────────────────────────────────────────────────
@@ -447,7 +450,7 @@ class CharacterWizardPage(ctk.CTkFrame):
                 b.configure(fg_color=(ACCENT if n == name else "transparent"),
                             text_color=(TEXT if n == name else MUTED))
             desc_title.configure(text=name)
-            bonuses = wd.RACIAL_BONUSES.get(name, {})
+            bonuses = wd.racial_bonuses(name, self.db)
             if bonuses:
                 bstr = "  ".join(f"+{v} {k.upper()}" for k, v in bonuses.items())
                 bonus_lbl.configure(text=f"ASI: {bstr}")
@@ -1054,7 +1057,7 @@ class CharacterWizardPage(ctk.CTkFrame):
                                      border_color=BORDER)
         racial_frame.pack(fill="x", pady=(12, 0))
         race = self._data.get("race", "")
-        bonuses = wd.RACIAL_BONUSES.get(race, {})
+        bonuses = wd.racial_bonuses(race, self.db)
         if bonuses:
             bstr = "  ".join(f"+{v} {k.upper()}" for k, v in bonuses.items())
             ctk.CTkLabel(racial_frame,
@@ -1078,7 +1081,7 @@ class CharacterWizardPage(ctk.CTkFrame):
                             raw[a] = 10
                 else:
                     raw = {a: score_vars[a].get() for a, _ in _ABILITIES}
-                bonuses = wd.RACIAL_BONUSES.get(self._data.get("race", ""), {})
+                bonuses = wd.racial_bonuses(self._data.get("race", ""), self.db)
                 self._data["scores"] = {
                     a: min(30, raw.get(a, 10) + bonuses.get(a, 0)) for a, _ in _ABILITIES
                 }
@@ -1289,15 +1292,22 @@ class CharacterWizardPage(ctk.CTkFrame):
         p = self._content
         cn = self._data.get("class_name", "").lower()
         level = self._data.get("level", 1)
+        class_display = self._data.get("class_name", "spellcaster")
         _section_title(p, "Spells")
 
-        need_c = wd.cantrips_known(cn, level)
-        is_prep = wd.is_preparing_caster(cn)
-        need_s = 0 if is_prep else wd.spells_known_count(cn, level)
-        max_sl = wd.max_spell_level_for_class(cn, level)
+        try:
+            need_c = wd.cantrips_known(cn, level)
+            is_prep = wd.is_preparing_caster(cn)
+            need_s = 0 if is_prep else wd.spells_known_count(cn, level)
+            max_sl = wd.max_spell_level_for_class(cn, level)
+        except Exception as e:
+            ctk.CTkLabel(p, text=f"Could not load spell data: {e}",
+                         text_color=DANGER, font=ctk.CTkFont(size=13)).pack(anchor="w", pady=20)
+            self._collector = None
+            return
 
         spell_intro = (
-            f"As a level {level} {self._data.get('class_name', 'spellcaster')}, "
+            f"As a level {level} {class_display}, "
             f"you start with {need_c} cantrip(s)" +
             (f" and prepare spells fresh each day from your full list." if is_prep else
              f" and {need_s} spell(s) known (up to level {max_sl})." if need_s > 0 else ".")
@@ -1308,100 +1318,99 @@ class CharacterWizardPage(ctk.CTkFrame):
             card = ctk.CTkFrame(p, fg_color=SURFACE, corner_radius=10, border_width=1,
                                 border_color=BORDER)
             card.pack(fill="x", pady=8)
-            ctk.CTkLabel(card, text="You prepare spells fresh each day from your class spell list.",
+            ctk.CTkLabel(card, text="Preparing caster — you choose spells fresh each day.",
                          text_color=TEXT, font=ctk.CTkFont(size=13, weight="bold")).pack(
                              anchor="w", padx=16, pady=(14, 4))
-            ctk.CTkLabel(card, text="After the wizard creates your character, head to the Spellbook "
-                         "tab to prepare your spells for the session. You'll always have access to your "
-                         "full list — no need to pre-select them here.",
+            ctk.CTkLabel(card, text="After creating your character, head to the Spellbook tab to prepare "
+                         "your spells for each session. You always have access to your full class list — "
+                         "no need to lock anything in here.",
                          text_color=BODY, font=ctk.CTkFont(size=13), wraplength=560,
                          justify="left").pack(anchor="w", padx=16, pady=(0, 14))
 
-        # Spell lists from DB
+        # Fetch spell lists from DB
         all_class_spells = self.db.list_spells(cls=self._data.get("class_name", ""))
         cantrips = [s for s in all_class_spells if s["level"] == 0]
-        leveled = [s for s in all_class_spells if 1 <= s["level"] <= max(1, max_sl)]
+        leveled  = [s for s in all_class_spells if 1 <= s["level"] <= max(1, max_sl)]
 
-        chosen_c = set(self._data.get("cantrips_chosen", []))
-        chosen_s = set(self._data.get("spells_chosen", []))
+        if not all_class_spells:
+            ctk.CTkLabel(p, text=f"No spells found in the database for {class_display}. "
+                         "You can add spells manually from the character sheet after creation.",
+                         text_color=MUTED, font=ctk.CTkFont(size=13), wraplength=580,
+                         justify="left").pack(anchor="w", pady=12)
+            self._collector = None
+            return
 
-        c_count_lbl = ctk.CTkLabel(p, text="", text_color=MUTED, font=ctk.CTkFont(size=11))
-        s_count_lbl = ctk.CTkLabel(p, text="", text_color=MUTED, font=ctk.CTkFont(size=11))
+        chosen_c: set[str] = set(self._data.get("cantrips_chosen", []))
+        chosen_s: set[str] = set(self._data.get("spells_chosen", []))
         cantrip_vars: dict[str, tk.BooleanVar] = {}
         spell_vars:   dict[str, tk.BooleanVar] = {}
+
+        c_count_lbl = ctk.CTkLabel(p, text="", text_color=MUTED, font=ctk.CTkFont(size=12))
+        s_count_lbl = ctk.CTkLabel(p, text="", text_color=MUTED, font=ctk.CTkFont(size=12))
 
         def _upd_counts():
             cc = sum(1 for v in cantrip_vars.values() if v.get())
             c_count_lbl.configure(
-                text=f"Cantrips: {cc} / {need_c}",
-                text_color=GOOD if cc == need_c else MUTED)
+                text=f"Selected: {cc} / {need_c}",
+                text_color=GOOD if cc == need_c else (DANGER if cc > need_c else MUTED))
             sc = sum(1 for v in spell_vars.values() if v.get())
             s_count_lbl.configure(
-                text=f"Spells known: {sc} / {need_s}",
-                text_color=GOOD if sc == need_s else MUTED)
+                text=f"Selected: {sc} / {need_s}",
+                text_color=GOOD if sc == need_s else (DANGER if sc > need_s else MUTED))
 
-        def _guard(d: dict[str, tk.BooleanVar], cap: int, v: tk.BooleanVar):
-            sel = sum(1 for x in d.values() if x.get())
-            if v.get() and sel > cap:
+        def _guard(pool: dict[str, tk.BooleanVar], cap: int, v: tk.BooleanVar):
+            if v.get() and sum(1 for x in pool.values() if x.get()) > cap:
                 v.set(False)
             _upd_counts()
 
         if cantrips and need_c > 0:
-            ctk.CTkLabel(p, text="Cantrips", text_color=ACCENT,
-                         font=ctk.CTkFont(size=13, weight="bold")).pack(anchor="w", pady=(12, 4))
-            c_count_lbl.pack(anchor="w", pady=(0, 6))
+            ctk.CTkLabel(p, text=f"Cantrips  (choose {need_c})", text_color=ACCENT,
+                         font=ctk.CTkFont(size=14, weight="bold")).pack(anchor="w", pady=(12, 2))
+            c_count_lbl.pack(anchor="w", pady=(0, 8))
             cg = ctk.CTkFrame(p, fg_color="transparent")
             cg.pack(fill="x")
+            for col in range(3):
+                cg.grid_columnconfigure(col, weight=1)
             for i, sp in enumerate(cantrips):
                 nm = sp["name"]
                 var = tk.BooleanVar(value=nm in chosen_c)
                 cantrip_vars[nm] = var
-                cb = ctk.CTkCheckBox(cg, text=nm, variable=var,
-                                     text_color=TEXT, fg_color=ACCENT, hover_color=ACCENT_H,
-                                     border_color=BORDER, font=ctk.CTkFont(size=12),
-                                     command=lambda v=var: _guard(cantrip_vars, need_c, v))
-                cb.grid(row=i // 3, column=i % 3, padx=8, pady=3, sticky="w")
-                cg.grid_columnconfigure(i % 3, weight=1)
+                ctk.CTkCheckBox(cg, text=nm, variable=var,
+                                text_color=TEXT, fg_color=ACCENT, hover_color=ACCENT_H,
+                                border_color=BORDER, font=ctk.CTkFont(size=13),
+                                command=lambda v=var: _guard(cantrip_vars, need_c, v)
+                                ).grid(row=i // 3, column=i % 3, padx=8, pady=4, sticky="w")
 
         if leveled and need_s > 0 and not is_prep:
-            ctk.CTkLabel(p, text="Spells Known", text_color=ACCENT,
-                         font=ctk.CTkFont(size=13, weight="bold")).pack(anchor="w", pady=(16, 4))
-            s_count_lbl.pack(anchor="w", pady=(0, 6))
+            ctk.CTkLabel(p, text=f"Spells Known  (choose {need_s}, up to level {max_sl})",
+                         text_color=ACCENT,
+                         font=ctk.CTkFont(size=14, weight="bold")).pack(anchor="w", pady=(20, 2))
+            s_count_lbl.pack(anchor="w", pady=(0, 8))
             sg = ctk.CTkFrame(p, fg_color="transparent")
             sg.pack(fill="x")
-            # Group by level
+            for col in range(3):
+                sg.grid_columnconfigure(col, weight=1)
             by_level: dict[int, list] = {}
             for sp in leveled:
                 by_level.setdefault(sp["level"], []).append(sp)
-            r = 0
+            row_idx = 0
             for sl in sorted(by_level):
-                ctk.CTkLabel(sg, text=f"Level {sl}",
-                             text_color=MUTED, font=ctk.CTkFont(size=10, weight="bold")).grid(
-                                 row=r, column=0, columnspan=3, sticky="w", padx=8, pady=(8, 2))
-                r += 1
-                for sp in by_level[sl]:
+                ctk.CTkLabel(sg, text=f"── Level {sl} ──",
+                             text_color=MUTED, font=ctk.CTkFont(size=11, weight="bold")
+                             ).grid(row=row_idx, column=0, columnspan=3,
+                                    sticky="w", padx=8, pady=(10, 3))
+                row_idx += 1
+                for col_i, sp in enumerate(by_level[sl]):
                     nm = sp["name"]
                     var = tk.BooleanVar(value=nm in chosen_s)
                     spell_vars[nm] = var
-                    cb = ctk.CTkCheckBox(sg, text=nm, variable=var,
-                                         text_color=TEXT, fg_color=ACCENT, hover_color=ACCENT_H,
-                                         border_color=BORDER, font=ctk.CTkFont(size=12),
-                                         command=lambda v=var: _guard(spell_vars, need_s, v))
-                    col = (r - 1) % 3  # won't work right, let's keep 3-col layout
-                cb_idx = 0
-                for sp in by_level[sl]:
-                    nm = sp["name"]
-                    sg.grid_columnconfigure(cb_idx % 3, weight=1)
-                    cb_idx += 1
-                    r_local = r + (cb_idx - 1) // 3
-                    col = (cb_idx - 1) % 3
-                    ctk.CTkCheckBox(sg, text=nm, variable=spell_vars.get(nm, tk.BooleanVar()),
+                    ctk.CTkCheckBox(sg, text=nm, variable=var,
                                     text_color=TEXT, fg_color=ACCENT, hover_color=ACCENT_H,
-                                    border_color=BORDER, font=ctk.CTkFont(size=12),
-                                    command=lambda v=spell_vars.get(nm): _guard(spell_vars, need_s, v)
-                                    if v else None).grid(row=r_local, column=col,
-                                                         padx=8, pady=2, sticky="w")
-                r += (len(by_level[sl]) + 2) // 3
+                                    border_color=BORDER, font=ctk.CTkFont(size=13),
+                                    command=lambda v=var: _guard(spell_vars, need_s, v)
+                                    ).grid(row=row_idx + col_i // 3, column=col_i % 3,
+                                           padx=8, pady=3, sticky="w")
+                row_idx += (len(by_level[sl]) + 2) // 3
 
         _upd_counts()
 

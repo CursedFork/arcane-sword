@@ -24,19 +24,20 @@ ALIGNMENTS = [
 # ── Class proficiency data (PHB) ───────────────────────────────────────────────
 
 CLASS_SAVING_THROWS = {
-    "artificer": ["int", "con"],
-    "barbarian": ["str", "con"],
-    "bard":      ["dex", "cha"],
-    "cleric":    ["wis", "cha"],
-    "druid":     ["int", "wis"],
-    "fighter":   ["str", "con"],
-    "monk":      ["str", "dex"],
-    "paladin":   ["wis", "cha"],
-    "ranger":    ["str", "dex"],
-    "rogue":     ["dex", "int"],
-    "sorcerer":  ["con", "cha"],
-    "warlock":   ["wis", "cha"],
-    "wizard":    ["int", "wis"],
+    "artificer":    ["int", "con"],
+    "barbarian":    ["str", "con"],
+    "bard":         ["dex", "cha"],
+    "blood hunter": ["dex", "int"],
+    "cleric":       ["wis", "cha"],
+    "druid":        ["int", "wis"],
+    "fighter":      ["str", "con"],
+    "monk":         ["str", "dex"],
+    "paladin":      ["wis", "cha"],
+    "ranger":       ["str", "dex"],
+    "rogue":        ["dex", "int"],
+    "sorcerer":     ["con", "cha"],
+    "warlock":      ["wis", "cha"],
+    "wizard":       ["int", "wis"],
 }
 
 ALL_SKILLS = [
@@ -47,51 +48,54 @@ ALL_SKILLS = [
 ]
 
 CLASS_SKILL_CHOICES = {
-    "artificer": {"count": 2, "from": ["Arcana", "History", "Investigation", "Medicine", "Nature", "Perception", "Sleight of Hand"]},
-    "barbarian": {"count": 2, "from": ["Animal Handling", "Athletics", "Intimidation", "Nature", "Perception", "Survival"]},
-    "bard":      {"count": 3, "from": ALL_SKILLS},
-    "cleric":    {"count": 2, "from": ["History", "Insight", "Medicine", "Persuasion", "Religion"]},
-    "druid":     {"count": 2, "from": ["Arcana", "Animal Handling", "Insight", "Medicine", "Nature", "Perception", "Religion", "Survival"]},
-    "fighter":   {"count": 2, "from": ["Acrobatics", "Animal Handling", "Athletics", "History", "Insight", "Intimidation", "Perception", "Survival"]},
-    "monk":      {"count": 2, "from": ["Acrobatics", "Athletics", "History", "Insight", "Religion", "Stealth"]},
-    "paladin":   {"count": 2, "from": ["Athletics", "Insight", "Intimidation", "Medicine", "Persuasion", "Religion"]},
-    "ranger":    {"count": 3, "from": ["Animal Handling", "Athletics", "Insight", "Investigation", "Nature", "Perception", "Stealth", "Survival"]},
-    "rogue":     {"count": 4, "from": ["Acrobatics", "Athletics", "Deception", "Insight", "Intimidation", "Investigation", "Perception", "Performance", "Persuasion", "Sleight of Hand", "Stealth"]},
-    "sorcerer":  {"count": 2, "from": ["Arcana", "Deception", "Insight", "Intimidation", "Persuasion", "Religion"]},
-    "warlock":   {"count": 2, "from": ["Arcana", "Deception", "History", "Intimidation", "Investigation", "Nature", "Religion"]},
-    "wizard":    {"count": 2, "from": ["Arcana", "History", "Insight", "Investigation", "Medicine", "Religion"]},
+    "artificer":    {"count": 2, "from": ["Arcana", "History", "Investigation", "Medicine", "Nature", "Perception", "Sleight of Hand"]},
+    "barbarian":    {"count": 2, "from": ["Animal Handling", "Athletics", "Intimidation", "Nature", "Perception", "Survival"]},
+    "bard":         {"count": 3, "from": ALL_SKILLS},
+    "blood hunter": {"count": 3, "from": ["Acrobatics", "Arcana", "Athletics", "History", "Insight", "Investigation", "Perception", "Stealth", "Survival"]},
+    "cleric":       {"count": 2, "from": ["History", "Insight", "Medicine", "Persuasion", "Religion"]},
+    "druid":        {"count": 2, "from": ["Arcana", "Animal Handling", "Insight", "Medicine", "Nature", "Perception", "Religion", "Survival"]},
+    "fighter":      {"count": 2, "from": ["Acrobatics", "Animal Handling", "Athletics", "History", "Insight", "Intimidation", "Perception", "Survival"]},
+    "monk":         {"count": 2, "from": ["Acrobatics", "Athletics", "History", "Insight", "Religion", "Stealth"]},
+    "paladin":      {"count": 2, "from": ["Athletics", "Insight", "Intimidation", "Medicine", "Persuasion", "Religion"]},
+    "ranger":       {"count": 3, "from": ["Animal Handling", "Athletics", "Insight", "Investigation", "Nature", "Perception", "Stealth", "Survival"]},
+    "rogue":        {"count": 4, "from": ["Acrobatics", "Athletics", "Deception", "Insight", "Intimidation", "Investigation", "Perception", "Performance", "Persuasion", "Sleight of Hand", "Stealth"]},
+    "sorcerer":     {"count": 2, "from": ["Arcana", "Deception", "Insight", "Intimidation", "Persuasion", "Religion"]},
+    "warlock":      {"count": 2, "from": ["Arcana", "Deception", "History", "Intimidation", "Investigation", "Nature", "Religion"]},
+    "wizard":       {"count": 2, "from": ["Arcana", "History", "Insight", "Investigation", "Medicine", "Religion"]},
 }
 
 CLASS_ARMOR_PROFS = {
-    "artificer": ["Light armor", "Medium armor", "Shields"],
-    "barbarian": ["Light armor", "Medium armor", "Shields"],
-    "bard":      ["Light armor"],
-    "cleric":    ["Light armor", "Medium armor", "Shields"],
-    "druid":     ["Light armor", "Medium armor", "Shields"],
-    "fighter":   ["All armor", "Shields"],
-    "monk":      [],
-    "paladin":   ["All armor", "Shields"],
-    "ranger":    ["Light armor", "Medium armor", "Shields"],
-    "rogue":     ["Light armor"],
-    "sorcerer":  [],
-    "warlock":   ["Light armor"],
-    "wizard":    [],
+    "artificer":    ["Light armor", "Medium armor", "Shields"],
+    "barbarian":    ["Light armor", "Medium armor", "Shields"],
+    "bard":         ["Light armor"],
+    "blood hunter": ["Light armor", "Medium armor", "Shields"],
+    "cleric":       ["Light armor", "Medium armor", "Shields"],
+    "druid":        ["Light armor", "Medium armor", "Shields"],
+    "fighter":      ["All armor", "Shields"],
+    "monk":         [],
+    "paladin":      ["All armor", "Shields"],
+    "ranger":       ["Light armor", "Medium armor", "Shields"],
+    "rogue":        ["Light armor"],
+    "sorcerer":     [],
+    "warlock":      ["Light armor"],
+    "wizard":       [],
 }
 
 CLASS_WEAPON_PROFS = {
-    "artificer": ["Simple weapons"],
-    "barbarian": ["Simple weapons", "Martial weapons"],
-    "bard":      ["Simple weapons", "Hand crossbows", "Longswords", "Rapiers", "Shortswords"],
-    "cleric":    ["Simple weapons"],
-    "druid":     ["Clubs", "Daggers", "Darts", "Javelins", "Maces", "Quarterstaffs", "Scimitars", "Sickles", "Slings", "Spears"],
-    "fighter":   ["Simple weapons", "Martial weapons"],
-    "monk":      ["Simple weapons", "Shortswords"],
-    "paladin":   ["Simple weapons", "Martial weapons"],
-    "ranger":    ["Simple weapons", "Martial weapons"],
-    "rogue":     ["Simple weapons", "Hand crossbows", "Longswords", "Rapiers", "Shortswords"],
-    "sorcerer":  ["Daggers", "Darts", "Slings", "Quarterstaffs", "Light crossbows"],
-    "warlock":   ["Simple weapons"],
-    "wizard":    ["Daggers", "Darts", "Slings", "Quarterstaffs", "Light crossbows"],
+    "artificer":    ["Simple weapons"],
+    "barbarian":    ["Simple weapons", "Martial weapons"],
+    "bard":         ["Simple weapons", "Hand crossbows", "Longswords", "Rapiers", "Shortswords"],
+    "blood hunter": ["Simple weapons", "Martial weapons"],
+    "cleric":       ["Simple weapons"],
+    "druid":        ["Clubs", "Daggers", "Darts", "Javelins", "Maces", "Quarterstaffs", "Scimitars", "Sickles", "Slings", "Spears"],
+    "fighter":      ["Simple weapons", "Martial weapons"],
+    "monk":         ["Simple weapons", "Shortswords"],
+    "paladin":      ["Simple weapons", "Martial weapons"],
+    "ranger":       ["Simple weapons", "Martial weapons"],
+    "rogue":        ["Simple weapons", "Hand crossbows", "Longswords", "Rapiers", "Shortswords"],
+    "sorcerer":     ["Daggers", "Darts", "Slings", "Quarterstaffs", "Light crossbows"],
+    "warlock":      ["Simple weapons"],
+    "wizard":       ["Daggers", "Darts", "Slings", "Quarterstaffs", "Light crossbows"],
 }
 
 CLASS_TOOL_PROFS = {
@@ -102,8 +106,8 @@ CLASS_TOOL_PROFS = {
 
 # Starting gold (GP) when player skips equipment packages
 STARTING_GOLD = {
-    "artificer": 125, "barbarian": 75,  "bard": 125, "cleric": 125,
-    "druid": 50,  "fighter": 175, "monk": 12,  "paladin": 175,
+    "artificer": 125, "barbarian": 75,  "bard": 125, "blood hunter": 125,
+    "cleric": 125, "druid": 50,  "fighter": 175, "monk": 12,  "paladin": 175,
     "ranger": 125, "rogue": 100,  "sorcerer": 75, "warlock": 100, "wizard": 100,
 }
 
@@ -161,56 +165,58 @@ STARTING_EQUIPMENT = {
         "A": ["Quarterstaff", "Arcane focus", "Scholar's Pack", "Spellbook"],
         "B": ["Dagger", "Arcane focus", "Explorer's Pack", "Spellbook"],
     },
+    "blood hunter": {
+        "A": ["Martial weapon", "Light crossbow & 20 bolts", "Studded leather armor", "Explorer's Pack"],
+        "B": ["Two martial weapons", "Handaxe ×2", "Scale mail", "Dungeoneer's Pack"],
+    },
 }
 
-# ── Racial ability score bonuses (PHB + Volo's, common races) ─────────────────
+# ── Racial ability score bonuses ──────────────────────────────────────────────
+# Parsed dynamically from the DB's body_md "Ability Score Increases:" line.
+# _RACIAL_BONUS_CACHE is populated lazily on first call to racial_bonuses().
 
-RACIAL_BONUSES: dict[str, dict[str, int]] = {
-    # PHB
-    "Dwarf":                {"con": 2},
-    "Hill Dwarf":           {"con": 2, "wis": 1},
-    "Mountain Dwarf":       {"con": 2, "str": 2},
-    "Elf":                  {"dex": 2},
-    "High Elf":             {"dex": 2, "int": 1},
-    "Wood Elf":             {"dex": 2, "wis": 1},
-    "Dark Elf":             {"dex": 2, "cha": 1},
-    "Drow":                 {"dex": 2, "cha": 1},
-    "Halfling":             {"dex": 2},
-    "Lightfoot Halfling":   {"dex": 2, "cha": 1},
-    "Stout Halfling":       {"dex": 2, "con": 1},
-    "Human":                {"str": 1, "dex": 1, "con": 1, "int": 1, "wis": 1, "cha": 1},
-    "Variant Human":        {},
-    "Dragonborn":           {"str": 2, "cha": 1},
-    "Gnome":                {"int": 2},
-    "Forest Gnome":         {"int": 2, "dex": 1},
-    "Rock Gnome":           {"int": 2, "con": 1},
-    "Half-Elf":             {"cha": 2},
-    "Half-Orc":             {"str": 2, "con": 1},
-    "Tiefling":             {"int": 1, "cha": 2},
-    # Volo's Guide
-    "Aasimar":              {"cha": 2},
-    "Fallen Aasimar":       {"cha": 2, "str": 1},
-    "Protector Aasimar":    {"cha": 2, "wis": 1},
-    "Scourge Aasimar":      {"cha": 2, "con": 1},
-    "Firbolg":              {"wis": 2, "str": 1},
-    "Goliath":              {"str": 2, "con": 1},
-    "Kenku":                {"dex": 2, "wis": 1},
-    "Lizardfolk":           {"con": 2, "wis": 1},
-    "Tabaxi":               {"dex": 2, "cha": 1},
-    "Triton":               {"str": 1, "con": 1, "cha": 1},
-    "Yuan-ti Pureblood":    {"cha": 2, "int": 1},
-    # Mordenkainen's
-    "Bugbear":              {"str": 2, "dex": 1},
-    "Goblin":               {"dex": 2, "con": 1},
-    "Hobgoblin":            {"int": 2, "con": 1},
-    "Kobold":               {"dex": 2},
-    "Orc":                  {"str": 2, "con": 1},
-    # Misc
-    "Tortle":               {"str": 2, "wis": 1},
-    "Warforged":            {"con": 2},
-    "Leonin":               {"str": 2, "con": 1},
-    "Satyr":                {"cha": 2, "dex": 1},
-}
+_RACIAL_BONUS_CACHE: dict[str, dict[str, int]] | None = None
+
+_STAT_MAP = {"STR": "str", "DEX": "dex", "CON": "con",
+             "INT": "int", "WIS": "wis", "CHA": "cha"}
+
+
+def _parse_asi_line(text: str) -> dict[str, int]:
+    """Parse '+N STAT' tokens from an ASI line into {stat: bonus} dict."""
+    import re
+    bonuses: dict[str, int] = {}
+    for m in re.finditer(r'\+(\d+)\s+([A-Z]{3})', text):
+        stat = _STAT_MAP.get(m.group(2).upper())
+        if stat:
+            bonuses[stat] = int(m.group(1))
+    return bonuses
+
+
+def racial_bonuses(race_name: str, db=None) -> dict[str, int]:
+    """Return ASI dict for a race, parsed from the DB's body_md on first access."""
+    global _RACIAL_BONUS_CACHE
+    if _RACIAL_BONUS_CACHE is None:
+        _RACIAL_BONUS_CACHE = {}
+        if db is not None:
+            import re
+            try:
+                rows = db.list_char_options(category="race")
+                for row in rows:
+                    body = row.get("body_md", "") or ""
+                    m = re.search(
+                        r'Ability Score (?:Increases?|Bonus(?:es)?).*?:\*{0,2}\s*(.*?)(?:\n|$)',
+                        body, re.IGNORECASE)
+                    if m:
+                        bonuses = _parse_asi_line(m.group(1))
+                        _RACIAL_BONUS_CACHE[row["name"]] = bonuses
+            except Exception:
+                pass
+    return _RACIAL_BONUS_CACHE.get(race_name, {})
+
+
+# Legacy dict kept for any code that still references RACIAL_BONUSES directly.
+# Maps to empty — callers should use racial_bonuses(name, db) instead.
+RACIAL_BONUSES: dict[str, dict[str, int]] = {}
 
 # ── Background data (PHB + SCAG) ──────────────────────────────────────────────
 
@@ -336,15 +342,18 @@ def spells_known_count(class_name: str, level: int) -> int:
 
 def max_spell_level_for_class(class_name: str, level: int) -> int:
     """Highest spell level accessible at this class level (0 = cantrips only)."""
-    from pages.spell_rules import caster_level, MULTICLASS_SLOTS
-    cl = caster_level([(class_name, level, "")])
-    if cl == 0:
+    try:
+        from pages.spell_rules import caster_level, MULTICLASS_SLOTS
+        cl = caster_level([{"class": class_name, "level": level, "subclass": ""}])
+        if cl == 0:
+            return 0
+        slots = MULTICLASS_SLOTS.get(cl, [0] * 9)
+        for sl in range(8, -1, -1):
+            if slots[sl] > 0:
+                return sl + 1
         return 0
-    slots = MULTICLASS_SLOTS.get(cl, [0] * 9)
-    for sl in range(8, -1, -1):
-        if slots[sl] > 0:
-            return sl + 1
-    return 0
+    except Exception:
+        return 0
 
 
 # ── Level milestone data ───────────────────────────────────────────────────────
@@ -637,6 +646,28 @@ CLASS_LEVEL_FEATURES: dict[str, dict[int, list[str]]] = {
         18: ["Spell Mastery — cast one 1st-level and one 2nd-level spell at will without slots"],
         19: ["Ability Score Improvement"],
         20: ["Signature Spells — two 3rd-level spells you can cast for free on a short rest"],
+    },
+    "blood hunter": {
+        1:  ["Hunter's Bane — advantage on Perception/Survival vs. undead, fiends, and aberrations", "Blood Maledict — curse a creature with a Rite (1/rest); uses grow with level"],
+        2:  ["Fighting Style — choose a combat speciality", "Crimson Rite — imbue your weapon with elemental damage; deal yourself 1 die of damage to activate"],
+        3:  ["Blood Hunter Order — choose your subclass", "Improved Crimson Rite — rite persists even when you sheathe the weapon"],
+        4:  ["Ability Score Improvement"],
+        5:  ["Extra Attack — attack twice per Attack action", "Crimson Rite die improves to d6"],
+        6:  ["Brand of Castigation — your rite marks a target; it takes psychic damage when it attacks others"],
+        7:  ["Blood Hunter Order feature", "Grim Psychometry — use INT to sense history of objects and locations"],
+        8:  ["Ability Score Improvement", "Dark Augmentation — +5 ft speed; proficiency in STR/DEX/CON saves"],
+        9:  ["Blood Hunter Order feature"],
+        10: ["Hardened Soul — can't be surprised; advantage vs. being frightened"],
+        11: ["Sense the Unseen — detect invisible creatures within 30 ft as a bonus action"],
+        12: ["Ability Score Improvement"],
+        13: ["Blood Hunter Order feature"],
+        14: ["Brand of Tethering — branded targets can't teleport"],
+        15: ["Crimson Rite die improves to d8; Blood Maledict uses increase"],
+        16: ["Ability Score Improvement"],
+        17: ["Blood Hunter Order feature"],
+        18: ["Rite Revival — when you drop to 0 HP, activate a Crimson Rite for free"],
+        19: ["Ability Score Improvement"],
+        20: ["Sanguine Mastery — critical hits deal max rite damage; Blood Maledict uses become unlimited"],
     },
 }
 
