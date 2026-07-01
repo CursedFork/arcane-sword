@@ -806,11 +806,14 @@ class CharacterSheetPage(ctk.CTkFrame):
     # ── Character picker actions ────────────────────────────────────────────────
 
     def _new_character(self):
-        cid = self.db.create_character({"name": "New Character"})
-        if self.app is not None:
-            self.app.active_character_id = cid
-        self._cid = cid
-        self.refresh()
+        if self.app is not None and hasattr(self.app, "show_page"):
+            self.app.show_page("character_wizard")
+        else:
+            cid = self.db.create_character({"name": "New Character"})
+            if self.app is not None:
+                self.app.active_character_id = cid
+            self._cid = cid
+            self.refresh()
 
     def _delete_character(self):
         if self._cid is None:

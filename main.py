@@ -38,6 +38,9 @@ from pages.campaign_notes import CampaignNotesPage
 from pages.character_io import CharacterIOPage
 from pages.settings_tab import SettingsPage
 from pages.placeholder import PlaceholderPage
+from pages.character_wizard import CharacterWizardPage
+
+_WIZARD_PAGES = {"character_wizard"}
 
 # ── Colour palette (kept identical to Arcane Shield) ─────────────────────────────
 BG       = "#0f0f13"
@@ -257,12 +260,16 @@ class App(ctk.CTk):
             "campaign":   CampaignNotesPage(self, self.db, self),
             "import":     CharacterIOPage(self, self.db, self),
             "settings":   SettingsPage(self, self.db, self),
+            "character_wizard": CharacterWizardPage(self, self.db, self),
         }
 
         pad = theme.panel_inset()
-        for page in self._pages.values():
+        for key, page in self._pages.items():
             page.configure(corner_radius=12)
-            page.grid(row=0, column=1, sticky="nsew", padx=(pad // 2, pad), pady=pad)
+            if key in _WIZARD_PAGES:
+                page.grid(row=0, column=0, columnspan=2, sticky="nsew", padx=0, pady=0)
+            else:
+                page.grid(row=0, column=1, sticky="nsew", padx=(pad // 2, pad), pady=pad)
             page.grid_remove()
 
         self._current: str | None = None
@@ -281,7 +288,18 @@ class App(ctk.CTk):
                               {"fg_color": "transparent", "text_color": MUTED}))
 
         self._current = name
-        self._pages[name].grid()
+        entering_wizard = name in _WIZARD_PAGES
+        if entering_wizard:
+            self._sidebar.grid_remove()
+            # Wizard spans full width
+            self._pages[name].grid(row=0, column=0, columnspan=2,
+                                   sticky="nsew", padx=0, pady=0)
+        else:
+            self._sidebar.grid()
+            pad = theme.panel_inset()
+            self._pages[name].grid(row=0, column=1, sticky="nsew",
+                                   padx=(pad // 2, pad), pady=pad)
+
         self._pages[name].refresh()
 
         btn = self._nav_btns.get(name)
