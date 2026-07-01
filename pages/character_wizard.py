@@ -38,6 +38,10 @@ DANGER   = "#c0392b"
 GOOD     = "#52be80"
 GOLD     = "#e0b040"
 
+# Mid-tone for readable body copy — between TEXT and MUTED.
+# Not in COLOR_KEYS so won't theme-update, but fine for all dark themes.
+BODY = "#c2c0d4"
+
 _ABILITIES = [("str", "STR"), ("dex", "DEX"), ("con", "CON"),
               ("int", "INT"), ("wis", "WIS"), ("cha", "CHA")]
 
@@ -263,10 +267,8 @@ class CharacterWizardPage(ctk.CTkFrame):
     def _step_identity(self):
         p = self._content
         _section_title(p, "Who are you?")
-        ctk.CTkLabel(p, text="Let's start with the basics — your character's name and a few quick choices "
-                     "about how the campaign tracks progress.",
-                     text_color=MUTED, font=ctk.CTkFont(size=12), wraplength=600,
-                     justify="left").pack(anchor="w", pady=(0, 20))
+        _intro(p, "Let's start with the basics — your character's name and a few quick choices "
+               "about how the campaign tracks progress.")
 
         # Name + player name
         row = ctk.CTkFrame(p, fg_color="transparent")
@@ -382,10 +384,8 @@ class CharacterWizardPage(ctk.CTkFrame):
     def _step_race(self):
         p = self._content
         _section_title(p, "Choose Your Race")
-        ctk.CTkLabel(p, text="Your race shapes your character's appearance, background history, and some "
-                     "natural abilities. It also adds bonuses to certain ability scores.",
-                     text_color=MUTED, font=ctk.CTkFont(size=12), wraplength=600,
-                     justify="left").pack(anchor="w", pady=(0, 16))
+        _intro(p, "Your race shapes your character's appearance, background history, and some "
+               "natural abilities. It also adds bonuses to certain ability scores.")
 
         outer = ctk.CTkFrame(p, fg_color="transparent")
         outer.pack(fill="both", expand=True)
@@ -423,8 +423,8 @@ class CharacterWizardPage(ctk.CTkFrame):
         desc_scroll = ctk.CTkScrollableFrame(desc_frame, fg_color="transparent",
                                               scrollbar_button_color=ACCENT, height=300)
         desc_scroll.pack(fill="both", expand=True, padx=8, pady=4)
-        desc_text = ctk.CTkLabel(desc_scroll, text="", text_color=MUTED,
-                                  font=ctk.CTkFont(size=11), wraplength=380, justify="left")
+        desc_text = ctk.CTkLabel(desc_scroll, text="", text_color=BODY,
+                                  font=ctk.CTkFont(size=13), wraplength=380, justify="left")
         desc_text.pack(anchor="w", padx=8, pady=4)
 
         # Subrace section
@@ -517,11 +517,8 @@ class CharacterWizardPage(ctk.CTkFrame):
     def _step_class(self):
         p = self._content
         _section_title(p, "Choose Your Class & Level")
-        ctk.CTkLabel(p, text="Your class is your character's primary calling — it determines your combat "
-                     "style, special abilities, and how you grow. Set your starting level if joining "
-                     "a campaign that's already in progress.",
-                     text_color=MUTED, font=ctk.CTkFont(size=12), wraplength=600,
-                     justify="left").pack(anchor="w", pady=(0, 16))
+        _intro(p, "Your class is your character's primary calling — it determines your combat style, "
+               "special abilities, and how you grow. Set your starting level if joining a campaign that's already in progress.")
 
         outer = ctk.CTkFrame(p, fg_color="transparent")
         outer.pack(fill="both", expand=True)
@@ -546,8 +543,8 @@ class CharacterWizardPage(ctk.CTkFrame):
         class_desc = ctk.CTkScrollableFrame(right, fg_color="transparent",
                                              scrollbar_button_color=ACCENT, height=220)
         class_desc.pack(fill="both", expand=False, padx=8, pady=4)
-        class_desc_lbl = ctk.CTkLabel(class_desc, text="", text_color=MUTED,
-                                       font=ctk.CTkFont(size=11), wraplength=380, justify="left")
+        class_desc_lbl = ctk.CTkLabel(class_desc, text="", text_color=BODY,
+                                       font=ctk.CTkFont(size=13), wraplength=380, justify="left")
         class_desc_lbl.pack(anchor="w", padx=8, pady=4)
 
         # Level + subclass section (below the two columns)
@@ -625,30 +622,141 @@ class CharacterWizardPage(ctk.CTkFrame):
 
         # Level picker inside cfg_frame
         lvl_row = ctk.CTkFrame(cfg_frame, fg_color="transparent")
-        lvl_row.pack(fill="x", padx=14, pady=(12, 4))
+        lvl_row.pack(fill="x", padx=14, pady=(14, 4))
         ctk.CTkLabel(lvl_row, text="Starting Level", text_color=ACCENT,
-                     font=ctk.CTkFont(size=12, weight="bold")).pack(side="left")
-        ctk.CTkLabel(lvl_row, text="(1 for a brand-new character)", text_color=MUTED,
-                     font=ctk.CTkFont(size=11)).pack(side="left", padx=12)
+                     font=ctk.CTkFont(size=14, weight="bold")).pack(side="left")
+        ctk.CTkLabel(lvl_row, text="  Use 1 for a brand-new character", text_color=MUTED,
+                     font=ctk.CTkFont(size=12)).pack(side="left")
 
         lvl_ctrl = ctk.CTkFrame(cfg_frame, fg_color="transparent")
-        lvl_ctrl.pack(anchor="w", padx=14, pady=(0, 4))
+        lvl_ctrl.pack(anchor="w", padx=14, pady=(0, 8))
         lvl_display = ctk.CTkLabel(lvl_ctrl, text=str(level_var.get()), text_color=TEXT,
-                                    font=ctk.CTkFont(size=22, weight="bold"), width=48)
+                                    font=ctk.CTkFont(size=28, weight="bold"), width=52)
+
+        # Level milestone panel (outside cfg_frame, full-width)
+        milestone_outer = ctk.CTkFrame(p, fg_color=SURFACE, corner_radius=10,
+                                        border_width=1, border_color=BORDER)
+        milestone_scroll = ctk.CTkScrollableFrame(milestone_outer, fg_color="transparent",
+                                                   scrollbar_button_color=ACCENT, height=300)
+        milestone_scroll.pack(fill="both", expand=True, padx=4, pady=8)
+
+        def _rebuild_milestones():
+            for w in milestone_scroll.winfo_children():
+                w.destroy()
+            cn = class_var.get().lower()
+            lv = level_var.get()
+            if not cn:
+                ctk.CTkLabel(milestone_scroll, text="Select a class above to see what you gain at each level.",
+                             text_color=MUTED, font=ctk.CTkFont(size=13)).pack(anchor="w", padx=12, pady=8)
+                return
+            milestones = wd.level_milestones(cn, lv)
+            sc_lv = lr.subclass_level(cn)
+            from pages.levelup_rules import asi_levels, HIT_DICE
+            hd = HIT_DICE.get(cn, 8)
+            for level_num, features in milestones:
+                prof = wd.PROF_BONUS[level_num]
+                prev_prof = wd.PROF_BONUS.get(level_num - 1, 0)
+                is_last = level_num == lv
+                is_asi = level_num in asi_levels(cn)
+                is_subclass = level_num == sc_lv
+                is_prof_up = prof > prev_prof
+
+                row = ctk.CTkFrame(milestone_scroll, fg_color=SURFACE2 if is_last else "transparent",
+                                    corner_radius=8, border_width=2 if is_last else 0,
+                                    border_color=ACCENT if is_last else "transparent")
+                row.pack(fill="x", padx=6, pady=(4 if is_last else 2))
+                row.grid_columnconfigure(1, weight=1)
+
+                # Level badge
+                badge_color = ACCENT if is_last else (GOLD if is_subclass or is_asi else SURFACE2)
+                badge_text_color = TEXT if is_last else (BG if is_subclass or is_asi else MUTED)
+                badge = ctk.CTkFrame(row, fg_color=badge_color, corner_radius=6, width=42, height=42)
+                badge.grid(row=0, column=0, padx=(10, 8), pady=8, sticky="n")
+                badge.grid_propagate(False)
+                ctk.CTkLabel(badge, text=str(level_num), text_color=badge_text_color,
+                             font=ctk.CTkFont(size=14, weight="bold")).place(relx=0.5, rely=0.5, anchor="center")
+
+                content = ctk.CTkFrame(row, fg_color="transparent")
+                content.grid(row=0, column=1, sticky="ew", padx=(0, 10), pady=6)
+
+                # Header row: level title + prof bonus
+                hdr_row = ctk.CTkFrame(content, fg_color="transparent")
+                hdr_row.pack(fill="x")
+                title_parts = []
+                if is_last:
+                    title_parts.append(f"Level {level_num}  ←  Your starting level")
+                else:
+                    title_parts.append(f"Level {level_num}")
+                ctk.CTkLabel(hdr_row, text=title_parts[0],
+                             text_color=TEXT if is_last else BODY,
+                             font=ctk.CTkFont(size=13, weight="bold")).pack(side="left")
+
+                tags = []
+                if is_prof_up:
+                    tags.append(f"Proficiency Bonus +{prof}")
+                if level_num == 1:
+                    tags.append(f"d{hd} Hit Die")
+                badges_row = ctk.CTkFrame(content, fg_color="transparent")
+                badges_row.pack(anchor="w", pady=(2, 0))
+                for tag in tags:
+                    ctk.CTkFrame(badges_row,
+                                  fg_color=GOOD if "Proficiency" in tag else GOLD,
+                                  corner_radius=4).pack(side="left", padx=(0, 4))
+                    ctk.CTkLabel(badges_row, text=f" {tag} ",
+                                 text_color=BG, font=ctk.CTkFont(size=10, weight="bold"),
+                                 fg_color=GOOD if "Proficiency" in tag else GOLD,
+                                 corner_radius=4).pack(side="left", padx=(0, 6))
+
+                # Feature list
+                feat_frame = ctk.CTkFrame(content, fg_color="transparent")
+                feat_frame.pack(fill="x", pady=(2, 0))
+                if features:
+                    for feat in features:
+                        if not feat:
+                            continue
+                        feat_row = ctk.CTkFrame(feat_frame, fg_color="transparent")
+                        feat_row.pack(fill="x", pady=1)
+                        bullet_color = ACCENT if is_last else (GOLD if is_subclass or is_asi else MUTED)
+                        ctk.CTkLabel(feat_row, text="●", text_color=bullet_color,
+                                     font=ctk.CTkFont(size=9), width=16).pack(side="left", padx=(0, 4))
+                        ctk.CTkLabel(feat_row, text=feat,
+                                     text_color=TEXT if is_last else BODY,
+                                     font=ctk.CTkFont(size=13), wraplength=480,
+                                     justify="left", anchor="w").pack(side="left", fill="x")
+                else:
+                    ctk.CTkLabel(feat_frame, text="No major new class features",
+                                 text_color=MUTED, font=ctk.CTkFont(size=12)).pack(anchor="w")
 
         def _set_level(delta: int):
             nv = max(1, min(20, level_var.get() + delta))
             level_var.set(nv)
             lvl_display.configure(text=str(nv))
             _update_subclass_row()
+            _rebuild_milestones()
+            if not milestone_outer.winfo_ismapped():
+                milestone_outer.pack(fill="x", pady=(10, 0))
 
-        ctk.CTkButton(lvl_ctrl, text="−", width=36, height=36, fg_color=SURFACE2,
-                      hover_color=BORDER, text_color=TEXT, font=ctk.CTkFont(size=16),
-                      command=lambda: _set_level(-1)).pack(side="left", padx=(0, 6))
-        lvl_display.pack(side="left", padx=4)
-        ctk.CTkButton(lvl_ctrl, text="+", width=36, height=36, fg_color=SURFACE2,
-                      hover_color=BORDER, text_color=TEXT, font=ctk.CTkFont(size=16),
-                      command=lambda: _set_level(1)).pack(side="left", padx=(6, 0))
+        ctk.CTkButton(lvl_ctrl, text="−", width=40, height=40, fg_color=SURFACE2,
+                      hover_color=BORDER, text_color=TEXT, font=ctk.CTkFont(size=18),
+                      command=lambda: _set_level(-1)).pack(side="left", padx=(0, 8))
+        lvl_display.pack(side="left", padx=6)
+        ctk.CTkButton(lvl_ctrl, text="+", width=40, height=40, fg_color=SURFACE2,
+                      hover_color=BORDER, text_color=TEXT, font=ctk.CTkFont(size=18),
+                      command=lambda: _set_level(1)).pack(side="left", padx=(8, 0))
+
+        # Wire milestone rebuild into _pick_class as well
+        _orig_pick_class = _pick_class
+
+        def _pick_class_with_milestones(cn: str, opt: dict):
+            _orig_pick_class(cn, opt)
+            _rebuild_milestones()
+            if not milestone_outer.winfo_ismapped():
+                milestone_outer.pack(fill="x", pady=(10, 0))
+
+        # Replace entries in _class_btns to use updated callback
+        for nm in list(_class_btns.keys()):
+            opt_match = next((o for o in class_opts if o["name"] == nm), {"name": nm, "body_md": ""})
+            _class_btns[nm].configure(command=lambda n=nm, o=opt_match: _pick_class_with_milestones(n, o))
 
         subclass_row.pack_forget()
 
@@ -656,7 +764,7 @@ class CharacterWizardPage(ctk.CTkFrame):
         if class_var.get():
             for opt in class_opts:
                 if opt["name"] == class_var.get():
-                    _pick_class(opt["name"], opt)
+                    _pick_class_with_milestones(opt["name"], opt)
                     break
 
         def collect():
@@ -672,10 +780,8 @@ class CharacterWizardPage(ctk.CTkFrame):
     def _step_scores(self):
         p = self._content
         _section_title(p, "Set Your Ability Scores")
-        ctk.CTkLabel(p, text="Your six ability scores define your character's physical and mental "
-                     "attributes. Choose a method below. Racial bonuses are previewed and applied automatically.",
-                     text_color=MUTED, font=ctk.CTkFont(size=12), wraplength=620,
-                     justify="left").pack(anchor="w", pady=(0, 16))
+        _intro(p, "Your six ability scores define your character's physical and mental attributes. "
+               "Choose a method below — racial bonuses will be previewed and applied automatically.")
 
         method_var = tk.StringVar(value=self._data.get("score_method", "standard_array"))
 
@@ -719,14 +825,14 @@ class CharacterWizardPage(ctk.CTkFrame):
             card.grid(row=0, column=col, padx=6, sticky="nsew")
             method_frame.grid_columnconfigure(col, weight=1)
             ctk.CTkLabel(card, text=title, text_color=TEXT,
-                         font=ctk.CTkFont(size=13, weight="bold")).pack(anchor="w", padx=12, pady=(12, 0))
+                         font=ctk.CTkFont(size=14, weight="bold")).pack(anchor="w", padx=14, pady=(14, 0))
             ctk.CTkLabel(card, text=tag, text_color=GOLD,
-                         font=ctk.CTkFont(size=10)).pack(anchor="w", padx=12)
-            ctk.CTkLabel(card, text=desc, text_color=MUTED, font=ctk.CTkFont(size=10),
-                         wraplength=190, justify="left").pack(anchor="w", padx=12, pady=(4, 8))
-            ctk.CTkButton(card, text="Use this method", height=30, fg_color=SURFACE2,
-                          hover_color=ACCENT_H, text_color=TEXT, font=ctk.CTkFont(size=11),
-                          command=lambda m=mid: _pick_method(m)).pack(fill="x", padx=12, pady=(0, 12))
+                         font=ctk.CTkFont(size=11)).pack(anchor="w", padx=14, pady=(2, 0))
+            ctk.CTkLabel(card, text=desc, text_color=BODY, font=ctk.CTkFont(size=12),
+                         wraplength=230, justify="left").pack(anchor="w", padx=14, pady=(6, 10))
+            ctk.CTkButton(card, text="Use this method", height=32, fg_color=SURFACE2,
+                          hover_color=ACCENT_H, text_color=TEXT, font=ctk.CTkFont(size=12),
+                          command=lambda m=mid: _pick_method(m)).pack(fill="x", padx=12, pady=(0, 14))
             method_btns.append((card, mid))
 
         # Score variable state (shared across method switches)
@@ -776,8 +882,8 @@ class CharacterWizardPage(ctk.CTkFrame):
             return rem
 
         def _build_sa(parent):
-            ctk.CTkLabel(parent, text="Assign each value to one ability (each can only be used once).",
-                         text_color=MUTED, font=ctk.CTkFont(size=11)).pack(anchor="w", pady=(0, 8))
+            ctk.CTkLabel(parent, text="Assign each value to one ability — each number can only be used once.",
+                         text_color=BODY, font=ctk.CTkFont(size=13)).pack(anchor="w", pady=(0, 8))
             remaining_lbl = ctk.CTkLabel(parent, text="", text_color=GOLD,
                                           font=ctk.CTkFont(size=12, weight="bold"))
             remaining_lbl.pack(anchor="w", pady=(0, 8))
@@ -887,8 +993,8 @@ class CharacterWizardPage(ctk.CTkFrame):
 
         def _build_manual(parent):
             ctk.CTkLabel(parent,
-                         text="Enter your rolled scores, or click 🎲 to roll 4d6 and drop the lowest.",
-                         text_color=MUTED, font=ctk.CTkFont(size=11)).pack(anchor="w", pady=(0, 12))
+                         text="Enter your rolled scores, or click 🎲 to simulate rolling 4d6 and dropping the lowest.",
+                         text_color=BODY, font=ctk.CTkFont(size=13)).pack(anchor="w", pady=(0, 12))
             grid = ctk.CTkFrame(parent, fg_color="transparent")
             grid.pack(fill="x")
             entries: dict[str, ctk.CTkEntry] = {}
@@ -986,12 +1092,8 @@ class CharacterWizardPage(ctk.CTkFrame):
     def _step_background(self):
         p = self._content
         _section_title(p, "Background & Skill Proficiencies")
-        ctk.CTkLabel(p,
-                     text="Your background tells the story of who you were before adventuring. "
-                     "It grants skill proficiencies, languages, and tools. Below you'll also "
-                     "choose your class skill proficiencies.",
-                     text_color=MUTED, font=ctk.CTkFont(size=12), wraplength=620,
-                     justify="left").pack(anchor="w", pady=(0, 16))
+        _intro(p, "Your background tells the story of who you were before adventuring. "
+               "It grants skill proficiencies, languages, and tools. Below you'll also choose your class skill proficiencies.")
 
         outer = ctk.CTkFrame(p, fg_color="transparent")
         outer.pack(fill="x")
@@ -1131,11 +1233,8 @@ class CharacterWizardPage(ctk.CTkFrame):
         p = self._content
         cn = self._data.get("class_name", "").lower()
         _section_title(p, "Starting Equipment")
-        ctk.CTkLabel(p,
-                     text="Choose a starting equipment package or take gold instead and "
-                     "buy your own gear at the start of the campaign.",
-                     text_color=MUTED, font=ctk.CTkFont(size=12), wraplength=600,
-                     justify="left").pack(anchor="w", pady=(0, 16))
+        _intro(p, "Choose a starting equipment package or take gold instead and "
+               "buy your own gear at the start of the campaign.")
 
         packages = wd.STARTING_EQUIPMENT.get(cn, {})
         gold = wd.STARTING_GOLD.get(cn, 100)
@@ -1160,8 +1259,8 @@ class CharacterWizardPage(ctk.CTkFrame):
                           font=ctk.CTkFont(size=13, weight="bold"),
                           command=lambda v=pkg: _pick(v)).pack(anchor="w", padx=14, pady=(12, 4))
             for item in items:
-                ctk.CTkLabel(card, text=f"  •  {item}", text_color=MUTED,
-                             font=ctk.CTkFont(size=12), anchor="w").pack(anchor="w", padx=24, pady=1)
+                ctk.CTkLabel(card, text=f"  •  {item}", text_color=BODY,
+                             font=ctk.CTkFont(size=13), anchor="w").pack(anchor="w", padx=24, pady=2)
             ctk.CTkFrame(card, fg_color="transparent", height=8).pack()
 
         # Gold option
@@ -1174,7 +1273,7 @@ class CharacterWizardPage(ctk.CTkFrame):
                       font=ctk.CTkFont(size=13, weight="bold"),
                       command=lambda: _pick("gold")).pack(anchor="w", padx=14, pady=(12, 4))
         ctk.CTkLabel(gold_card, text=f"  •  {gold} gp to spend at a shop before your first adventure.",
-                     text_color=MUTED, font=ctk.CTkFont(size=12), anchor="w").pack(anchor="w", padx=24, pady=(1, 12))
+                     text_color=BODY, font=ctk.CTkFont(size=13), anchor="w").pack(anchor="w", padx=24, pady=(2, 14))
 
         # Restore selection
         _pick(choice_var.get() if choice_var.get() in cards else ("A" if "A" in cards else "gold"))
@@ -1197,12 +1296,13 @@ class CharacterWizardPage(ctk.CTkFrame):
         need_s = 0 if is_prep else wd.spells_known_count(cn, level)
         max_sl = wd.max_spell_level_for_class(cn, level)
 
-        ctk.CTkLabel(p, text=f"As a level {level} {self._data.get('class_name', 'spellcaster')}, "
-                     f"you get {need_c} cantrip(s)" +
-                     (f" and prepare spells from your full list each day." if is_prep else
-                      f" and know {need_s} spell(s) up to level {max_sl}." if need_s > 0 else "."),
-                     text_color=MUTED, font=ctk.CTkFont(size=12), wraplength=600,
-                     justify="left").pack(anchor="w", pady=(0, 12))
+        spell_intro = (
+            f"As a level {level} {self._data.get('class_name', 'spellcaster')}, "
+            f"you start with {need_c} cantrip(s)" +
+            (f" and prepare spells fresh each day from your full list." if is_prep else
+             f" and {need_s} spell(s) known (up to level {max_sl})." if need_s > 0 else ".")
+        )
+        _intro(p, spell_intro)
 
         if is_prep:
             card = ctk.CTkFrame(p, fg_color=SURFACE, corner_radius=10, border_width=1,
@@ -1214,7 +1314,7 @@ class CharacterWizardPage(ctk.CTkFrame):
             ctk.CTkLabel(card, text="After the wizard creates your character, head to the Spellbook "
                          "tab to prepare your spells for the session. You'll always have access to your "
                          "full list — no need to pre-select them here.",
-                         text_color=MUTED, font=ctk.CTkFont(size=11), wraplength=540,
+                         text_color=BODY, font=ctk.CTkFont(size=13), wraplength=560,
                          justify="left").pack(anchor="w", padx=16, pady=(0, 14))
 
         # Spell lists from DB
@@ -1316,9 +1416,7 @@ class CharacterWizardPage(ctk.CTkFrame):
     def _step_review(self):
         p = self._content
         _section_title(p, "Review Your Character")
-        ctk.CTkLabel(p, text="Everything looks good? Click 'Create Character' to bring them to life.",
-                     text_color=MUTED, font=ctk.CTkFont(size=12), wraplength=600,
-                     justify="left").pack(anchor="w", pady=(0, 16))
+        _intro(p, "Everything looks good? Click 'Create Character' below to bring them to life.")
 
         d = self._data
         cn = d.get("class_name", "").lower()
@@ -1524,4 +1622,10 @@ def _mod(score: int) -> int:
 
 def _section_title(parent, text: str):
     ctk.CTkLabel(parent, text=text, text_color=TEXT,
-                 font=ctk.CTkFont(size=22, weight="bold")).pack(anchor="w", pady=(4, 4))
+                 font=ctk.CTkFont(size=24, weight="bold")).pack(anchor="w", pady=(4, 6))
+
+
+def _intro(parent, text: str, wraplength: int = 640):
+    ctk.CTkLabel(parent, text=text, text_color=BODY,
+                 font=ctk.CTkFont(size=14), wraplength=wraplength,
+                 justify="left").pack(anchor="w", pady=(0, 18))
